@@ -1,5 +1,12 @@
 # vinext-starter
 
+## Local preview on Windows
+
+Install Node.js 22.13 or later, run `npm ci`, then `npm run dev:local`.
+Open http://127.0.0.1:3000. This previews the portfolio with Next.js;
+the existing build and deployment commands remain for the Sites environment.
+Cloudflare bindings and Sites authentication are not provided by this local preview.
+
 A clean full-stack starter running on
 [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
 Drizzle support.
