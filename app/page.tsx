@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { aleemDesigns, caseStudies, experience, projects, services, stack } from "./portfolio-data";
+import Link from "next/link";
+import { caseStudies, experience, projects, services, stack } from "./portfolio-data";
 
 const filters = ["All", "Brand", "Paid Media", "Content", "Video", "Development"];
 
@@ -16,7 +17,7 @@ export default function Home() {
     <main>
       <nav className="nav shell" aria-label="Primary navigation">
         <a className="brand-mark" href="#top" aria-label="Amr Ahmed Abdelhay, home">AA</a>
-        <div className="nav-links"><a href="#work">Work</a><a href="#aleem-gallery">Aleem designs</a><a href="#experience">Experience</a><a href="#about">About</a></div>
+        <div className="nav-links"><a href="#work">Work</a><Link href="/work/aleem#aleem-gallery">Aleem designs</Link><a href="#experience">Experience</a><a href="#about">About</a></div>
         <a className="nav-cta" href="https://github.com/AmrAbdelhay" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
       </nav>
 
@@ -61,15 +62,6 @@ export default function Home() {
               </div>
             </article>
           ))}
-        </div>
-        <div className="aleem-gallery" id="aleem-gallery">
-          <div className="aleem-gallery-heading"><div><span className="gallery-eyebrow">ALEEM · SELECTED CREATIVE</span><h2>Designs for learning in action.</h2><p>Arabic social designs for courses and business education. Select a design to see it in full.</p></div><span className="gallery-count">01 — 06</span></div>
-          <div className="aleem-gallery-window" aria-label="Aleem design gallery">
-            <div className="aleem-gallery-track">
-              {[...aleemDesigns, ...aleemDesigns].map((design, index) => <a className="aleem-design" href={design.image} target="_blank" rel="noreferrer" aria-label={`View Aleem design: ${design.label}`} key={`${design.image}-${index}`} tabIndex={index >= aleemDesigns.length ? -1 : undefined}><img src={design.image} alt={index < aleemDesigns.length ? `تصميم عليم: ${design.label}` : ""} loading="lazy" /><span aria-hidden="true">↗</span></a>)}
-            </div>
-          </div>
-          <p className="aleem-gallery-tip">Scroll to browse · Hover to pause</p>
         </div>
       </section>
 

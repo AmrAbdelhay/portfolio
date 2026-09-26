@@ -53,7 +53,17 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
     {study.metrics && <section className="detail-metrics shell" aria-label="Selected results">{study.metrics.map(metric => <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}{slug === "noga" && <p>Approximate commercial results based on campaign exports and delivered-order records. Estimated ROAS.</p>}{slug === "rs" && <p>Approximate sales reported for a three-month period during the sales role.</p>}</section>}
     {slug === "rs" && <RSGallery />}
     <section className="detail-chapters shell"><div className="section-label"><span>01</span> My work at {study.name}</div><div className="detail-chapter-list">{detail.chapters.map(chapter => <article key={chapter.number}><span className="chapter-number">{chapter.number}</span><div><h2>{chapter.title}</h2><p>{chapter.text}</p><small>{chapter.evidence}</small></div></article>)}</div></section>
-    {slug === "aleem" && <section className="detail-creative shell"><div className="section-label"><span>02</span> Selected Aleem designs</div><div className="detail-design-grid">{aleemDesigns.map(design => <a href={design.image} target="_blank" rel="noreferrer" key={design.image} aria-label={`Open design: ${design.label}`}><img src={design.image} alt={`تصميم عليم: ${design.label}`} loading="lazy" /><span>View full design ↗</span></a>)}</div></section>}
+    {slug === "aleem" && (
+        <section className="aleem-gallery shell" id="aleem-gallery">
+          <div className="aleem-gallery-heading"><div><span className="gallery-eyebrow">ALEEM · SELECTED CREATIVE</span><h2>Designs for learning in action.</h2><p>Arabic social designs for courses and business education. Select a design to see it in full.</p></div><span className="gallery-count">01 — 06</span></div>
+          <div className="aleem-gallery-window" aria-label="Aleem design gallery">
+            <div className="aleem-gallery-track">
+              {[...aleemDesigns, ...aleemDesigns].map((design, index) => <a className="aleem-design" href={design.image} target="_blank" rel="noreferrer" aria-label={`View Aleem design: ${design.label}`} key={`${design.image}-${index}`} tabIndex={index >= aleemDesigns.length ? -1 : undefined}><img src={design.image} alt={index < aleemDesigns.length ? `تصميم عليم: ${design.label}` : ""} loading="lazy" /><span aria-hidden="true">↗</span></a>)}
+            </div>
+          </div>
+          <p className="aleem-gallery-tip">Scroll to browse · Hover to pause</p>
+        </section>
+    )}
     {slug === "noga" && <section className="detail-website shell"><div><span className="section-label"><span>02</span> Website</span><h2>The storefront is part of the story.</h2><p>Browse the website work and code behind the Noga Home store.</p></div><a className="button primary" href="https://github.com/AmrAbdelhay/noga-home-store" target="_blank" rel="noreferrer">View store project ↗</a></section>}
     <footer className="detail-footer shell"><a href="/#work">← Back to all work</a><span>Amr Ahmed Abdelhay · 2026</span></footer>
   </main>;
