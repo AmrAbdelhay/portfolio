@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 const works = [
- { id: "student-testimonial", title: "A student's perspective", description: "Shady Mohamed shares his experience at the Financial Accountant Workshop.", role: "Filming & editing", badge: "Organic + Paid", views: "742K", likes: "~1K", comments: "215", shares: "39", url: "https://www.facebook.com/reel/1538084490731890", note: "Combined organic and paid counts; breakdown unavailable." },
- { id: "cash-flow-workshop", title: "Cash flow, explained", description: "A moment from the financial statements workshop, captured as a short educational reel.", role: "", badge: "Organic", views: "124K", likes: "996", comments: "46", shares: "108", url: "https://www.facebook.com/reel/4395420284070934", note: "Organic performance · No paid promotion." },
+ { id: "student-testimonial", title: "A student's perspective", description: "Shady Mohamed shares his experience at the Financial Accountant Workshop.", role: "Filming, editing & post caption writing", badge: "Organic + Paid", views: "742K", likes: "~1K", comments: "215", shares: "39", url: "https://www.facebook.com/reel/1538084490731890", note: "Combined organic and paid counts; breakdown unavailable." },
+ { id: "cash-flow-workshop", title: "Cash flow, explained", description: "A moment from the financial statements workshop, captured as a short educational reel.", role: "Post caption writing", badge: "Organic", views: "124K", likes: "996", comments: "46", shares: "108", url: "https://www.facebook.com/reel/4395420284070934", note: "Organic performance · No paid promotion." },
 ];
 export default function RSGallery() {
  const rail = useRef<HTMLDivElement>(null);
