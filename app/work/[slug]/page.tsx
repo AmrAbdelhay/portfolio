@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { aleemDesigns, caseStudies } from "../../portfolio-data";
 
 import RSGallery from "../../rs-gallery";
+import BrandSocials from "../../brand-socials";
 
 const details = {
   noga: {
@@ -49,7 +50,7 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
   const study = caseStudies.find((item) => item.slug === slug)!;
   return <main className="detail-page" style={{ "--detail-accent": study.accent } as React.CSSProperties}>
     <nav className="nav shell" aria-label="Case study navigation"><a className="brand-mark" href="/" aria-label="Portfolio home">AA</a><a className="detail-back" href="/#work">← All case studies</a></nav>
-    <header className="detail-hero shell"><div className="detail-overline">CASE STUDY / {study.market} / {study.period}</div><div className="detail-hero-row"><div><h1>{study.name}<span>{detail.headline}</span></h1><p>{detail.intro}</p></div><img src={study.image} alt={`${study.name} logo`} /></div><div className="detail-tags">{study.tags.map(tag => <span key={tag}>{tag}</span>)}</div></header>
+    <header className="detail-hero shell"><div className="detail-overline">CASE STUDY / {study.market} / {study.period}</div><div className="detail-hero-row"><div><h1>{study.name}<span>{detail.headline}</span></h1><p>{detail.intro}</p><BrandSocials slug={slug} name={study.name} /></div><img src={study.image} alt={`${study.name} logo`} /></div><div className="detail-tags">{study.tags.map(tag => <span key={tag}>{tag}</span>)}</div></header>
     {study.metrics && <section className="detail-metrics shell" aria-label="Selected results">{study.metrics.map(metric => <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}{slug === "noga" && <p>Approximate commercial results based on campaign exports and delivered-order records. Estimated ROAS.</p>}{slug === "rs" && <p>Approximate sales reported for a three-month period during the sales role.</p>}</section>}
     {slug === "rs" && <RSGallery />}
     <section className="detail-chapters shell"><div className="section-label"><span>01</span> My work at {study.name}</div><div className="detail-chapter-list">{detail.chapters.map(chapter => <article key={chapter.number}><span className="chapter-number">{chapter.number}</span><div><h2>{chapter.title}</h2><p>{chapter.text}</p><small>{chapter.evidence}</small></div></article>)}</div></section>

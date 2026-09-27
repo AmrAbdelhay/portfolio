@@ -1061,3 +1061,8 @@ button {
 .rs-work-copy a{font-size:12px;color:var(--lime);margin-top:6px}
 @media(max-width:1000px){.rs-work{flex-basis:85%}}
 @media(max-width:600px){.rs-gallery-heading{display:block}.rs-gallery-controls{margin-top:20px}.rs-work{flex-basis:88%;display:block}.rs-video-wrap video{max-height:440px}.rs-work-copy{padding:22px}.rs-counts{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.rs-counts dd{font-size:24px}}
+
+.brand-socials { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 16px; }
+.brand-socials a { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; color: #bdc5b8; font-size: 12px; text-decoration: none; }
+.brand-socials a:hover { color: var(--lime); }
+.brand-socials a:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; border-radius: 3px; }
