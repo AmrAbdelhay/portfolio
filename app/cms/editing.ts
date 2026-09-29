@@ -3,6 +3,14 @@ export type EditorValue = string | EditorValue[] | {
     [key: string]: EditorValue;
 };
 export function newItem(field: string, current: EditorValue[]): EditorValue {
+    const rsDefaults: Record<string, EditorValue> = {
+        images: { image: "", label: "" },
+        rsDesigns: { title: "", description: "", role: "", images: [] },
+        rsCampaigns: { title: "", description: "", role: "", objective: "", period: "", metrics: [], images: [], note: "" },
+        rsContent: { title: "", description: "", role: "", format: "", text: "", url: "", images: [] },
+        rsWorks: { id: crypto.randomUUID(), title: "", description: "", role: "", badge: "Organic", views: "", likes: "", comments: "", shares: "", url: "", note: "", video: "", poster: "" },
+    };
+    if (rsDefaults[field]) return structuredClone(rsDefaults[field]);
     const nested: Record<string, EditorValue> = {
         metrics: { value: "", label: "" },
         chapters: { number: "", title: "", text: "", evidence: "" },

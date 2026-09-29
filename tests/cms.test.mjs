@@ -107,3 +107,24 @@ test('admin routes validate drafts, pass publish intent and report conflicts and
  mode='denied';assert.equal((await GET(request())).status,403);assert.equal((await upload(request({}))).status,403);
  mode='outage';assert.equal((await upload(request({}))).status,503);
 });
+
+test('RS legacy documents gain galleries without losing existing videos and results',()=>{
+ const legacy=structuredClone(defaultContent);
+ delete legacy.rsDesigns;delete legacy.rsCampaigns;delete legacy.rsContent;
+ const parsed=contentSchema.parse(legacy);
+ assert.deepEqual(parsed.rsDesigns,[]);assert.deepEqual(parsed.rsCampaigns,[]);assert.deepEqual(parsed.rsContent,[]);
+ assert.equal(parsed.rsWorks.length,2);assert.equal(parsed.caseStudies.find(b=>b.template==='rs').metrics.length,2);
+ for(const section of ['rsDesigns','rsCampaigns','rsContent']) {
+  parsed[section].push(newItem(section,[]));
+  assert.equal(contentSchema.safeParse(parsed).success,true);
+  assert.equal(newItem(section,parsed[section]).title,'');
+ }
+});
+test('RS media round-trips carousels, campaign metrics and Arabic copy and rejects unsafe images',()=>{
+ const c=structuredClone(defaultContent);
+ c.rsDesigns=[{title:'Carousel',description:'',role:'Designer',images:[{image:'https://example.com/a.webp',label:'Slide 1'},{image:'/slide2.png',label:'Slide 2'}]}];
+ c.rsCampaigns=[{title:'Campaign',description:'',role:'Media buyer',objective:'Messages',period:'2026',metrics:[{value:'100',label:'Messages'}],images:[],note:'Reported results'}];
+ c.rsContent=[{title:'Caption',description:'',role:'Writer',format:'Caption',text:'نص عربي\nسطر جديد',url:'',images:[]}];
+ assert.deepEqual(contentSchema.parse(c),c);
+ c.rsDesigns[0].images[0].image='javascript:alert(1)';assert.equal(contentSchema.safeParse(c).success,false);
+});

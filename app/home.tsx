@@ -59,7 +59,7 @@ export default function Home({ content }: { content: PortfolioContent }) {
               <div className="case-copy">
                 <div className="case-meta"><span>{study.market}</span><span>{study.period}</span></div><h2>{study.name}</h2><h3>{study.role}</h3><p>{study.summary}</p>
                 <div className="tag-row">{study.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
-                {!!study.metrics.length && <div className="mini-metrics">{study.metrics.map((metric) => <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}</div>}
+                {study.template !== "rs" && !!study.metrics.length && <div className="mini-metrics">{study.metrics.map((metric) => <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}</div>}
                 <a className="case-work-link" href={`/work/${study.slug}`}>Explore the full {study.name} story ↗</a>
               </div>
             </article>

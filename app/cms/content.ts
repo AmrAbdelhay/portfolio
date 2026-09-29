@@ -7,6 +7,8 @@ const text = z.string().max(12000);
 const url = text.refine(v => v === "" || (/^\/(?!\/)/.test(v) && !v.includes("\\")) || /^https:\/\//.test(v), "Use an HTTPS link or a local /path");
 const metric = z.object({ value: text, label: text });
 const chapter = z.object({ number: text, title: text, text, evidence: text });
+const images = z.array(z.object({ image: url, label: text })).max(100);
+const work = { title: text, description: text, role: text };
 export const contentSchema = z.object({
     profile: z.object({ name: text.min(1), location: text, title: text, headline: text, headlineSecond: text, intro: text, portrait: url, about: text, github: url }),
     services: z.array(text).max(50),
@@ -17,7 +19,29 @@ export const contentSchema = z.object({
     aleemDesigns: z.array(z.object({ image: url, label: text })).max(200),
     details: z.record(z.string(), z.object({ headline: text, intro: text, chapters: z.array(chapter) })),
     rsWorks: z.array(z.object({ id: text, title: text, description: text, role: text, badge: z.enum(["Organic", "Organic + Paid"]), views: text, likes: text, comments: text, shares: text, url, note: text, video: url, poster: url })).max(200),
+    rsDesigns: z.array(z.object({ ...work, images })).max(200).default([]),
+    rsCampaigns: z.array(z.object({ ...work, objective: text, period: text, metrics: z.array(metric), images, note: text })).max(200).default([]),
+    rsContent: z.array(z.object({ ...work, format: text, text, url, images })).max(200).default([]),
     brandPlatforms: z.record(z.string(), z.array(z.object({ platform: z.enum(["Facebook", "Instagram"]), url }))),
+}).transform(value => {
+    for (const brand of value.caseStudies) {
+        if (brand.template !== "rs") continue;
+        if (brand.role === "Sales → Operations → Marketing") brand.role = "Digital Marketing · Content · Design · Paid Media";
+        if (brand.summary.startsWith("Started in sales, generating approximately EGP 200K")) brand.summary = "Created content, social designs and video for RS, managed social media, and worked on paid campaigns and performance reporting.";
+        if (brand.tags.join("|") === "Sales|Operations|Marketing|Design|Video") brand.tags = ["Content", "Design", "Video", "Paid Media"];
+        const story = value.details[brand.slug];
+        if (story?.headline === "Sales first. Then operations. Then marketing.") {
+            story.headline = "Content, creative & paid media.";
+            story.intro = "My digital marketing work at RS brings together content writing, social design, photography, video production, campaign execution and performance reporting.";
+            story.chapters = [...story.chapters.filter(c => c.title.startsWith("Digital marketing")), ...story.chapters.filter(c => !c.title.startsWith("Digital marketing"))].map((c, i) => ({ ...c, number: String(i + 1).padStart(2, "0") }));
+        }
+    }
+    for (const project of value.projects) if (project.title === "RS: Sales to Marketing") {
+        project.title = "RS: Content, Creative & Campaigns";
+        project.description = "Social designs, video production, written content and paid campaign results.";
+    }
+    for (const item of value.experience) if (item.company === "RS" && item.description.startsWith("Approximately EGP 200K in sales across three months")) item.description = "Early experience in customer sales and operations, including Odoo ERP data entry and reporting, before moving into digital marketing.";
+    return value;
 }).superRefine((value, ctx) => {
     const slugs = value.caseStudies.map(x => x.slug);
     if (new Set(slugs).size !== slugs.length)
