@@ -1,0 +1,738 @@
+diff --git a/app/admin/panel.tsx b/app/admin/panel.tsx
+index f136476..6098c18 100644
+--- a/app/admin/panel.tsx
++++ b/app/admin/panel.tsx
+@@ -4,38 +4,114 @@ import { browserDatabase } from "../cms/browser";
+ import { contentSchema, type PortfolioContent } from "../cms/content";
+ import "./style.css";
+ import { newItem, updateSection, type EditorValue as Value } from "../cms/editing";
+-const labels: Record<string, string> = { rsDesigns: "RS · التصميمات", rsCampaigns: "RS · نتائج الحملات", rsContent: "RS · الكونتنت", images: "الصور / شرائح الكاروسيل", objective: "هدف الحملة", format: "نوع المحتوى (كابشن / سكريبت / خطة)", template: "قالب صفحة البراند", profile: "بياناتي", caseStudies: "البراندات", projects: "مكتبة الأعمال", services: "الخدمات", experience: "الخبرات", stack: "الأدوات والمهارات", aleemDesigns: "تصميمات عليم", details: "قصص البراندات", rsWorks: "RS · الفيديوهات", brandPlatforms: "روابط التواصل", name: "الاسم", title: "العنوان", description: "الوصف", image: "الصورة", video: "الفيديو", poster: "غلاف الفيديو", portrait: "الصورة الشخصية", url: "الرابط", link: "الرابط", role: "دوري", summary: "نبذة", slug: "اسم الرابط", headline: "العنوان الرئيسي", headlineSecond: "السطر الثاني", intro: "المقدمة", about: "عنّي", location: "الموقع", period: "الفترة", market: "السوق", tags: "التصنيفات", metrics: "النتائج", value: "القيمة", label: "الوصف", chapters: "أقسام القصة", text: "النص", evidence: "الأعمال الداعمة", views: "المشاهدات", likes: "الإعجابات", comments: "التعليقات", shares: "المشاركات", badge: "نوع الوصول", note: "ملاحظة", platform: "المنصة", items: "العناصر", accent: "لون البراند", assetHint: "وصف الهوية", monogram: "الحروف المختصرة", short: "عنوان مختصر", category: "التصنيف", status: "الحالة", tone: "لون البطاقة", company: "الشركة", number: "الرقم", id: "المعرّف", github: "GitHub" };
++
++const labels: Record<string, string> = { rsDesigns: "RS · التصميمات", rsCampaigns: "RS · نتائج الحملات", rsContent: "RS · الكونتنت", images: "الصور / شرائح الكاروسيل", objective: "هدف الحملة", format: "نوع المحتوى (كابشن / سكريبت / خطة)", template: "قالب صفحة البراند", profile: "بياناتي", caseStudies: "بيانات البراند", projects: "مكتبة الأعمال", services: "الخدمات", experience: "الخبرات", stack: "الأدوات والمهارات", aleemDesigns: "تصميمات عليم", details: "قصة البراند", rsWorks: "RS · الفيديوهات", brandPlatforms: "روابط التواصل", name: "الاسم", title: "العنوان", description: "الوصف", image: "الصورة", video: "الفيديو", poster: "غلاف الفيديو", portrait: "الصورة الشخصية", url: "الرابط", link: "الرابط", role: "دوري", summary: "نبذة", slug: "اسم الرابط", headline: "العنوان الرئيسي", headlineSecond: "السطر الثاني", intro: "المقدمة", about: "عنّي", location: "الموقع", period: "الفترة", market: "السوق", tags: "التصنيفات", metrics: "النتائج", value: "القيمة", label: "الوصف", chapters: "أقسام القصة", text: "النص", evidence: "الأعمال الداعمة", views: "المشاهدات", likes: "الإعجابات", comments: "التعليقات", shares: "المشاركات", badge: "نوع الوصول", note: "ملاحظة", platform: "المنصة", items: "العناصر", accent: "لون البراند", assetHint: "وصف الهوية", monogram: "الحروف المختصرة", short: "عنوان مختصر", category: "التصنيف", status: "الحالة", tone: "لون البطاقة", company: "الشركة", number: "الرقم", id: "المعرّف", github: "GitHub" };
+ const choices: Record<string, string[]> = { template: ["standard", "noga", "rs", "aleem"], badge: ["Organic", "Organic + Paid"], platform: ["Facebook", "Instagram"], status: ["live", "placeholder"], tone: ["lime", "blue", "orange", "cyan", "violet", "rose", "navy", "gold"] };
+ const choiceLabels: Record<string, string> = { standard: "قصة براند", noga: "قصة + رابط متجر Noga", rs: "RS · تصميمات وفيديوهات وحملات وكونتنت", aleem: "قصة + تصميمات عليم" };
+ const assetFields = new Set(["image", "video", "poster", "portrait"]);
+-function Editor({ value, change, field, upload }: {
+-    value: Value;
+-    change: (v: Value) => void;
+-    field: string;
+-    upload: (file: File) => Promise<string>;
+-}) {
++const generalKeys: (keyof PortfolioContent)[] = ["profile", "services", "projects", "experience", "stack"];
++
++function AssetEditor({ field, value, change, upload }: { field: string; value: string; change: (v: string) => void; upload: (file: File) => Promise<string> }) {
+     const [uploading, setUploading] = useState(false);
+     const [error, setError] = useState("");
+-    if (typeof value === "string")
+-        return <label className="cms-field"><span>{labels[field] ?? field}</span>{choices[field] ? <select value={value} onChange={e => change(e.target.value)}>{choices[field].map(v => <option key={v} value={v}>{choiceLabels[v] ?? v}</option>)}</select> : <textarea rows={value.length > 100 ? 4 : 1} dir="auto" value={value} onChange={e => change(e.target.value)}/>}{assetFields.has(field) && <><input aria-label={`رفع ${labels[field]}`} type="file" accept={field === "video" ? "video/mp4,video/webm" : "image/jpeg,image/png,image/webp,image/gif"} disabled={uploading} onChange={async (e) => { const input = e.currentTarget; const file = input.files?.[0]; if (!file)
+-            return; setUploading(true); setError(""); try {
++    const [showManual, setShowManual] = useState(false);
++    const isVideo = field === "video";
++    async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
++        const input = e.currentTarget;
++        const file = input.files?.[0];
++        if (!file) return;
++        setUploading(true);
++        setError("");
++        try {
+             change(await upload(file));
+-        }
+-        catch (err) {
++        } catch (err) {
+             setError(err instanceof Error ? err.message : "تعذر الرفع");
+-        }
+-        finally {
++        } finally {
+             setUploading(false);
+             input.value = "";
+-        } }}/>{uploading && <small>جاري رفع الملف…</small>}{error && <small role="alert">{error}</small>}{value && (field === "video" ? <video className="cms-video-preview" src={value} controls preload="metadata" /> : <img className="cms-preview" src={value} alt="معاينة"/>)}</>}</label>;
++        }
++    }
++    return (
++        <div className="cms-field cms-asset">
++            <span>{labels[field] ?? field}</span>
++            {value && (isVideo
++                ? <video className="cms-video-preview" src={value} controls preload="metadata" />
++                : <img className="cms-preview" src={value} alt="معاينة" />)}
++            <div className="cms-asset-actions">
++                <label className="cms-upload-btn">
++                    {uploading ? "جاري الرفع…" : value ? "تغيير الملف" : "رفع من جهازك"}
++                    <input aria-label={`رفع ${labels[field] ?? field}`} type="file" accept={isVideo ? "video/mp4,video/webm" : "image/jpeg,image/png,image/webp,image/gif"} disabled={uploading} onChange={handleFile} hidden />
++                </label>
++                {value && <button type="button" onClick={() => change("")}>إزالة</button>}
++                <button type="button" className="cms-link-toggle" onClick={() => setShowManual(s => !s)}>{showManual ? "إخفاء الرابط" : "أو الصق رابط جاهز"}</button>
++            </div>
++            {error && <small role="alert">{error}</small>}
++            {showManual && <input type="text" dir="ltr" placeholder="https://..." value={value} onChange={e => change(e.target.value)} />}
++        </div>
++    );
++}
++
++function Editor({ value, change, field, upload }: {
++    value: Value;
++    change: (v: Value) => void;
++    field: string;
++    upload: (file: File) => Promise<string>;
++}) {
++    if (typeof value === "string") {
++        if (assetFields.has(field)) return <AssetEditor field={field} value={value} change={change} upload={upload} />;
++        return <label className="cms-field"><span>{labels[field] ?? field}</span>{choices[field] ? <select value={value} onChange={e => change(e.target.value)}>{choices[field].map(v => <option key={v} value={v}>{choiceLabels[v] ?? v}</option>)}</select> : <textarea rows={value.length > 100 ? 4 : 1} dir="auto" value={value} onChange={e => change(e.target.value)} />}</label>;
++    }
+     if (Array.isArray(value))
+-        return <div className="cms-array">{value.map((item, index) => <details key={index} open={typeof item === "string"}><summary>{typeof item === "string" ? `${labels[field] ?? field} ${index + 1}` : String((item as Record<string, Value>).title || (item as Record<string, Value>).name || (item as Record<string, Value>).label || `${labels[field] ?? field} ${index + 1}`)}</summary><div className="cms-row-actions"><button type="button" disabled={index === 0} onClick={() => { const next = [...value]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; change(next); }}>↑</button><button type="button" disabled={index === value.length - 1} onClick={() => { const next = [...value]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; change(next); }}>↓</button><button type="button" onClick={() => change(value.filter((_, i) => i !== index))}>إزالة من المسودة</button></div><Editor field={field} value={item} upload={upload} change={v => change(value.map((x, i) => i === index ? v : x))}/></details>)}<button type="button" onClick={() => { change([...value, newItem(field, value)]); }}>+ إضافة عنصر</button></div>;
+-    return <div className="cms-fields">{Object.entries(value).map(([key, item]) => <div key={key}>{typeof item !== "string" && <h3>{labels[key] ?? key}</h3>}<Editor value={item} change={v => change({ ...value, [key]: v })} field={key} upload={upload}/></div>)}</div>;
++        return <div className="cms-array">{value.map((item, index) => <details key={index} open={typeof item === "string"}><summary>{typeof item === "string" ? `${labels[field] ?? field} ${index + 1}` : String((item as Record<string, Value>).title || (item as Record<string, Value>).name || (item as Record<string, Value>).label || `${labels[field] ?? field} ${index + 1}`)}</summary><div className="cms-row-actions"><button type="button" disabled={index === 0} onClick={() => { const next = [...value]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; change(next); }}>↑</button><button type="button" disabled={index === value.length - 1} onClick={() => { const next = [...value]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; change(next); }}>↓</button><button type="button" onClick={() => change(value.filter((_, i) => i !== index))}>إزالة من المسودة</button></div><Editor field={field} value={item} upload={upload} change={v => change(value.map((x, i) => i === index ? v : x))} /></details>)}<button type="button" onClick={() => { change([...value, newItem(field, value)]); }}>+ إضافة عنصر</button></div>;
++    return <div className="cms-fields">{Object.entries(value).map(([key, item]) => <div key={key}>{typeof item !== "string" && <h3>{labels[key] ?? key}</h3>}<Editor value={item} change={v => change({ ...value, [key]: v })} field={key} upload={upload} /></div>)}</div>;
+ }
++
++function BrandPage({ slug, content, update, upload, busy, onRemove }: {
++    slug: string;
++    content: PortfolioContent;
++    update: <K extends keyof PortfolioContent>(key: K, value: PortfolioContent[K]) => void;
++    upload: (file: File) => Promise<string>;
++    busy: boolean;
++    onRemove: (slug: string) => void;
++}) {
++    const index = content.caseStudies.findIndex(b => b.slug === slug);
++    if (index === -1) return <p>البراند ده اتحذف أو اتغيّر اسم الرابط بتاعه. اختار براند تاني من القايمة.</p>;
++    const card = content.caseStudies[index];
++    const story = content.details[slug] ?? { headline: "", intro: "", chapters: [] };
++    const platforms = content.brandPlatforms[slug] ?? [];
++    return (
++        <fieldset disabled={busy}>
++            <h3>بيانات البراند</h3>
++            <Editor field="caseStudies" value={card as unknown as Value} upload={upload} change={v => { const next = content.caseStudies.map((b, i) => i === index ? (v as unknown as typeof b) : b); update("caseStudies", next); }} />
++            <h3>قصة البراند</h3>
++            <Editor field="details" value={story as unknown as Value} upload={upload} change={v => update("details", { ...content.details, [slug]: v as unknown as typeof story })} />
++            <h3>روابط التواصل</h3>
++            <Editor field="brandPlatforms" value={platforms as unknown as Value} upload={upload} change={v => update("brandPlatforms", { ...content.brandPlatforms, [slug]: v as unknown as typeof platforms })} />
++            {slug === "rs" && <>
++                <h3>{labels.rsWorks}</h3>
++                <Editor field="rsWorks" value={content.rsWorks as unknown as Value} upload={upload} change={v => update("rsWorks", v as unknown as typeof content.rsWorks)} />
++                <h3>{labels.rsDesigns}</h3>
++                <Editor field="rsDesigns" value={content.rsDesigns as unknown as Value} upload={upload} change={v => update("rsDesigns", v as unknown as typeof content.rsDesigns)} />
++                <h3>{labels.rsCampaigns}</h3>
++                <Editor field="rsCampaigns" value={content.rsCampaigns as unknown as Value} upload={upload} change={v => update("rsCampaigns", v as unknown as typeof content.rsCampaigns)} />
++                <h3>{labels.rsContent}</h3>
++                <Editor field="rsContent" value={content.rsContent as unknown as Value} upload={upload} change={v => update("rsContent", v as unknown as typeof content.rsContent)} />
++            </>}
++            {slug === "aleem" && <>
++                <h3>{labels.aleemDesigns}</h3>
++                <Editor field="aleemDesigns" value={content.aleemDesigns as unknown as Value} upload={upload} change={v => update("aleemDesigns", v as unknown as typeof content.aleemDesigns)} />
++            </>}
++            <div className="cms-danger">
++                <button type="button" onClick={() => onRemove(slug)}>حذف البراند ده نهائيًا</button>
++            </div>
++        </fieldset>
++    );
++}
++
+ export default function Admin() {
+     const [content, setContent] = useState<PortfolioContent | null>(null);
+     const [savedContent, setSavedContent] = useState<PortfolioContent | null>(null);
+-    const [section, setSection] = useState<keyof PortfolioContent>("profile");
++    const [section, setSection] = useState<string>("profile");
+     const [revision, setRevision] = useState(0);
+     const [email, setEmail] = useState("");
+     const [password, setPassword] = useState("");
+@@ -58,6 +134,22 @@ export default function Admin() {
+             setContent(structuredClone(savedContent)); setDirty(false); setMessage("تم استرجاع آخر مسودة محفوظة.");
+         }
+     }
++    function update<K extends keyof PortfolioContent>(key: K, value: PortfolioContent[K]) {
++        setContent(previous => previous ? updateSection(previous, key, value as unknown as Value) : previous);
++        setDirty(true);
++    }
++    function removeBrand(slug: string) {
++        if (!content) return;
++        if (!window.confirm("حذف البراند ده نهائيًا من المسودة؟ هتقدر تسترجعه بزرار «استرجاع المحفوظ» لحد ما تنشر.")) return;
++        update("caseStudies", content.caseStudies.filter(b => b.slug !== slug));
++        setSection("profile");
++    }
++    function addBrand() {
++        if (!content) return;
++        const item = newItem("caseStudies", content.caseStudies as unknown as Value[]) as unknown as typeof content.caseStudies[number];
++        update("caseStudies", [...content.caseStudies, item]);
++        setSection(`brand:${item.slug}`);
++    }
+     useEffect(() => { let active = true; async function init() { try {
+         const { data: { session } } = await browserDatabase().auth.getSession();
+         if (!active)
+@@ -113,6 +205,7 @@ export default function Admin() {
+     finally {
+         setBusy(false);
+     } }
++    const sectionLabel = section.startsWith("brand:") ? (content?.caseStudies.find(b => `brand:${b.slug}` === section)?.name ?? "براند") : (labels[section] ?? section);
+     return <main className="cms" dir="rtl" lang="ar"><header><div><span className="cms-kicker">AMR / PORTFOLIO</span><h1>إدارة المحتوى</h1><p>كل أعمالك، من مكان واحد.</p></div><a href="/" target="_blank" rel="noreferrer">عرض الموقع ↗</a></header>{message && <p role="status" className="cms-message">{message}</p>}{!signedIn ? <form className="cms-login" onSubmit={async (e) => { e.preventDefault(); setBusy(true); setMessage(""); try {
+         const { error } = await browserDatabase().auth.signInWithPassword({ email, password });
+         if (error)
+@@ -126,5 +219,5 @@ export default function Admin() {
+     }
+     finally {
+         setBusy(false);
+-    } }}><h2>تسجيل دخول الأدمن</h2><label>البريد الإلكتروني<input type="email" required autoComplete="username" dir="ltr" value={email} onChange={e => setEmail(e.target.value)}/></label><label>كلمة المرور<input type="password" required autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)}/></label><button disabled={busy}>{busy ? "جاري التحقق…" : "دخول"}</button></form> : <><div className="cms-toolbar"><span>{!content ? "لم يتم تحميل المحتوى" : dirty ? "تغييرات غير محفوظة" : "المسودة محفوظة"}</span><button disabled={busy || !content} onClick={() => save("save")}>حفظ المسودة</button><button className="cms-publish" disabled={busy || !content} onClick={() => save("publish")}>نشر على الموقع</button><button disabled={busy || !dirty} onClick={discard}>استرجاع المحفوظ</button><button disabled={busy || dirty} onClick={async () => { setBusy(true); try { const { error } = await browserDatabase().auth.signOut(); if (error) throw error; setSignedIn(false); setContent(null); setSavedContent(null); setMessage(""); } catch { setMessage("تعذر تسجيل الخروج. حاول مرة أخرى."); } finally { setBusy(false); } }}>خروج</button></div>{!content && <button disabled={busy} onClick={retryLoad}>إعادة تحميل المحتوى</button>}{content && <div className="cms-layout"><nav aria-label="أقسام المحتوى">{Object.keys(content).map(key => <button key={key} disabled={busy} aria-current={section === key ? "page" : undefined} onClick={() => setSection(key as keyof PortfolioContent)}>{labels[key] ?? key}</button>)}</nav><section><h2>{labels[section]}</h2><p className="cms-help">عدّل المحتوى واحفظه كمسودة. اضغط «نشر على الموقع» لما تكون جاهز لعرض التعديلات للزوار.</p><fieldset disabled={busy}><Editor key={section} field={section} value={content[section] as unknown as Value} upload={upload} change={value => { setContent(previous => previous ? updateSection(previous, section, value) : previous); setDirty(true); }}/></fieldset></section></div>}</>}</main>;
++    } }}><h2>تسجيل دخول الأدمن</h2><label>البريد الإلكتروني<input type="email" required autoComplete="username" dir="ltr" value={email} onChange={e => setEmail(e.target.value)} /></label><label>كلمة المرور<input type="password" required autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} /></label><button disabled={busy}>{busy ? "جاري التحقق…" : "دخول"}</button></form> : <><div className="cms-toolbar"><span>{!content ? "لم يتم تحميل المحتوى" : dirty ? "تغييرات غير محفوظة" : "المسودة محفوظة"}</span><button disabled={busy || !content} onClick={() => save("save")}>حفظ المسودة</button><button className="cms-publish" disabled={busy || !content} onClick={() => save("publish")}>نشر على الموقع</button><button disabled={busy || !dirty} onClick={discard}>استرجاع المحفوظ</button><button disabled={busy || dirty} onClick={async () => { setBusy(true); try { const { error } = await browserDatabase().auth.signOut(); if (error) throw error; setSignedIn(false); setContent(null); setSavedContent(null); setMessage(""); } catch { setMessage("تعذر تسجيل الخروج. حاول مرة أخرى."); } finally { setBusy(false); } }}>خروج</button></div>{!content && <button disabled={busy} onClick={retryLoad}>إعادة تحميل المحتوى</button>}{content && <div className="cms-layout"><nav aria-label="أقسام المحتوى"><span className="cms-nav-heading">عام</span>{generalKeys.map(key => <button key={key} disabled={busy} aria-current={section === key ? "page" : undefined} onClick={() => setSection(key)}>{labels[key] ?? key}</button>)}<span className="cms-nav-heading">البراندات</span>{content.caseStudies.map(b => <button key={b.slug} disabled={busy} aria-current={section === `brand:${b.slug}` ? "page" : undefined} onClick={() => setSection(`brand:${b.slug}`)}>{b.name || b.slug}</button>)}<button disabled={busy} className="cms-add-brand" onClick={addBrand}>+ إضافة براند جديد</button></nav><section><h2>{sectionLabel}</h2><p className="cms-help">عدّل المحتوى واحفظه كمسودة. اضغط «نشر على الموقع» لما تكون جاهز لعرض التعديلات للزوار.</p>{section.startsWith("brand:") ? <BrandPage slug={section.slice(6)} content={content} update={update} upload={upload} busy={busy} onRemove={removeBrand} /> : <fieldset disabled={busy}><Editor key={section} field={section} value={content[section as keyof PortfolioContent] as unknown as Value} upload={upload} change={value => update(section as keyof PortfolioContent, value as unknown as PortfolioContent[keyof PortfolioContent])} /></fieldset>}</section></div>}</>}</main>;
+ }
+diff --git a/app/admin/style.css b/app/admin/style.css
+index 997e8a5..e294311 100644
+--- a/app/admin/style.css
++++ b/app/admin/style.css
+@@ -1,3 +1,6 @@
+ .cms{max-width:1300px;margin:auto;padding:40px 24px 100px;color:#eff3e9;font-family:Arial,sans-serif}.cms header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #394132;padding-bottom:28px}.cms h1{font-size:38px;margin:12px 0}.cms p{color:#b7c0af;line-height:1.8}.cms-kicker{color:#c6ef7d;letter-spacing:.2em;font-size:12px}.cms a{color:#c6ef7d}.cms button{border:1px solid #47513d;background:#222b20;color:#eff3e9;padding:12px 18px;border-radius:10px;cursor:pointer;font:inherit}.cms button:disabled{opacity:.45;cursor:not-allowed}.cms button:hover:not(:disabled){border-color:#c6ef7d}.cms button:focus-visible,.cms input:focus-visible,.cms textarea:focus-visible,.cms select:focus-visible{outline:2px solid #c6ef7d;outline-offset:3px}.cms .cms-publish{background:#c6ef7d;color:#17220e}.cms-toolbar{display:flex;gap:12px;align-items:center;position:sticky;top:0;z-index:10;background:#141b12;padding:16px 0;flex-wrap:wrap}.cms-toolbar>span{margin-inline-end:auto}.cms-layout{display:grid;grid-template-columns:210px 1fr;gap:28px;margin-top:24px}.cms-layout nav{display:flex;flex-direction:column;gap:8px;align-self:start;position:sticky;top:95px}.cms-layout nav button{text-align:right;background:transparent;border-color:transparent}.cms-layout nav button[aria-current]{background:#293422;color:#c6ef7d}.cms-layout section{background:#192117;padding:28px;border:1px solid #35412e;border-radius:18px;min-width:0}.cms fieldset{padding:0;border:0;min-width:0}.cms-field,.cms-login label{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}.cms textarea,.cms select,.cms input:not([type=file]){width:100%;padding:12px;border:1px solid #45503d;border-radius:8px;background:#10170e;color:#fff;font:inherit;line-height:1.6;box-sizing:border-box}.cms textarea{resize:vertical}.cms input[type=file]{max-width:100%}.cms-preview{width:140px;height:110px;object-fit:contain;background:#0d130b;border-radius:8px}.cms details{border:1px solid #3b4834;border-radius:12px;margin-bottom:16px;padding:18px}.cms summary{cursor:pointer;font-weight:bold;line-height:1.7}.cms-row-actions{display:flex;gap:8px;margin:16px 0}.cms-row-actions button{font-size:12px;padding:8px 12px}.cms-message{white-space:pre-wrap;background:#26311f;border:1px solid #566b43;border-radius:12px;padding:16px}.cms-login{max-width:440px;margin:60px auto;background:#1a2317;padding:32px;border-radius:18px}.cms-login button{width:100%}.cms h3{margin:24px 0 16px;font-size:16px}.cms-array{min-width:0}@media(max-width:700px){.cms{padding:24px 14px}.cms-layout{grid-template-columns:1fr}.cms-layout nav{position:static;display:flex;flex-direction:row;overflow:auto}.cms-layout nav button{white-space:nowrap}.cms-layout section{padding:16px}.cms header{gap:15px}.cms h1{font-size:28px}.cms-toolbar{position:static}.cms-toolbar>span{width:100%}}
+ 
+ .cms-video-preview{width:100%;max-width:360px;max-height:240px;border-radius:10px;background:#0d130b}.cms-help{font-size:14px}.cms-row-actions{flex-wrap:wrap}
++.cms-asset-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.cms-upload-btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid #47513d;background:#293422;color:#c6ef7d;padding:12px 18px;border-radius:10px;cursor:pointer;font:inherit}.cms-upload-btn:hover{border-color:#c6ef7d}.cms-link-toggle{background:transparent;border-color:transparent;color:#8fa080;font-size:13px;padding:8px 4px}.cms-asset small[role=alert]{color:#ff9e9e}
++.cms-nav-heading{font-size:12px;letter-spacing:.08em;color:#7f8c76;margin:14px 0 2px;padding:0 4px}.cms-nav-heading:first-child{margin-top:0}.cms-add-brand{color:#c6ef7d;border-style:dashed}
++.cms-danger{margin-top:32px;padding-top:20px;border-top:1px solid #3b4834}.cms-danger button{border-color:#6b3535;color:#ff9e9e}.cms-danger button:hover{border-color:#ff6b6b}
+diff --git a/package-lock.json b/package-lock.json
+index 85f05d3..744cc4a 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -466,6 +466,7 @@
+       "version": "1.10.0",
+       "resolved": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-1.10.0.tgz",
+       "integrity": "sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA==",
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "dependencies": {
+@@ -1588,6 +1589,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "Apache-2.0",
+       "optional": true,
+       "os": [
+@@ -1610,6 +1612,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "Apache-2.0",
+       "optional": true,
+       "os": [
+@@ -1632,6 +1635,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -1648,6 +1652,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -1664,9 +1669,7 @@
+       "cpu": [
+         "arm"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -1683,9 +1686,7 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -1702,9 +1703,7 @@
+       "cpu": [
+         "ppc64"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -1721,9 +1720,7 @@
+       "cpu": [
+         "riscv64"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -1740,9 +1737,7 @@
+       "cpu": [
+         "s390x"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -1759,9 +1754,7 @@
+       "cpu": [
+         "x64"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -1778,9 +1771,7 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "libc": [
+-        "musl"
+-      ],
++      "dev": true,
+       "license": "LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -1797,9 +1788,7 @@
+       "cpu": [
+         "x64"
+       ],
+-      "libc": [
+-        "musl"
+-      ],
++      "dev": true,
+       "license": "LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -1816,9 +1805,7 @@
+       "cpu": [
+         "arm"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "Apache-2.0",
+       "optional": true,
+       "os": [
+@@ -1841,9 +1828,7 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "Apache-2.0",
+       "optional": true,
+       "os": [
+@@ -1866,9 +1851,7 @@
+       "cpu": [
+         "ppc64"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "Apache-2.0",
+       "optional": true,
+       "os": [
+@@ -1891,9 +1874,7 @@
+       "cpu": [
+         "riscv64"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "Apache-2.0",
+       "optional": true,
+       "os": [
+@@ -1916,9 +1897,7 @@
+       "cpu": [
+         "s390x"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "Apache-2.0",
+       "optional": true,
+       "os": [
+@@ -1941,9 +1920,7 @@
+       "cpu": [
+         "x64"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
++      "dev": true,
+       "license": "Apache-2.0",
+       "optional": true,
+       "os": [
+@@ -1966,9 +1943,7 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "libc": [
+-        "musl"
+-      ],
++      "dev": true,
+       "license": "Apache-2.0",
+       "optional": true,
+       "os": [
+@@ -1991,9 +1966,7 @@
+       "cpu": [
+         "x64"
+       ],
+-      "libc": [
+-        "musl"
+-      ],
++      "dev": true,
+       "license": "Apache-2.0",
+       "optional": true,
+       "os": [
+@@ -2016,6 +1989,7 @@
+       "cpu": [
+         "wasm32"
+       ],
++      "dev": true,
+       "license": "Apache-2.0 AND LGPL-3.0-or-later AND MIT",
+       "optional": true,
+       "dependencies": {
+@@ -2035,6 +2009,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "Apache-2.0 AND LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -2054,6 +2029,7 @@
+       "cpu": [
+         "ia32"
+       ],
++      "dev": true,
+       "license": "Apache-2.0 AND LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -2073,6 +2049,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "Apache-2.0 AND LGPL-3.0-or-later",
+       "optional": true,
+       "os": [
+@@ -2215,9 +2192,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2234,9 +2208,6 @@
+       "cpu": [
+         "arm64"
+       ],
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2253,9 +2224,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2272,9 +2240,6 @@
+       "cpu": [
+         "x64"
+       ],
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2519,9 +2484,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2539,9 +2501,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2559,9 +2518,6 @@
+         "ppc64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2579,9 +2535,6 @@
+         "s390x"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2599,9 +2552,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2619,9 +2569,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3005,9 +2952,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3025,9 +2969,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3045,9 +2986,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3065,9 +3003,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3736,9 +3671,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3753,9 +3685,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3770,9 +3699,6 @@
+         "ppc64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3787,9 +3713,6 @@
+         "riscv64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3804,9 +3727,6 @@
+         "riscv64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3821,9 +3741,6 @@
+         "s390x"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3838,9 +3755,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -3855,9 +3769,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -7781,9 +7692,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+@@ -7805,9 +7713,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+@@ -7829,9 +7734,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+@@ -7853,9 +7755,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+@@ -10359,9 +10258,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+@@ -10383,9 +10279,6 @@
+         "arm64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+@@ -10407,9 +10300,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "glibc"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
+@@ -10431,9 +10321,6 @@
+         "x64"
+       ],
+       "dev": true,
+-      "libc": [
+-        "musl"
+-      ],
+       "license": "MPL-2.0",
+       "optional": true,
+       "os": [
