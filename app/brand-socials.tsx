@@ -1,20 +1,6 @@
-const brandPlatforms: Record<string, { platform: "Facebook" | "Instagram"; url: string }[]> = {
-  aleem: [
-    { platform: "Facebook", url: "https://www.facebook.com/aleemacademy.sa" },
-    { platform: "Instagram", url: "https://www.instagram.com/aleem_saa/" },
-  ],
-  rs: [
-    { platform: "Facebook", url: "https://www.facebook.com/rspaac" },
-    { platform: "Instagram", url: "https://www.instagram.com/rspaac/" },
-  ],
-  noga: [
-    { platform: "Facebook", url: "https://www.facebook.com/profile.php?id=61579710984123" },
-    { platform: "Instagram", url: "https://www.instagram.com/noga_home.store/" },
-  ],
-};
-
-export default function BrandSocials({ slug, name }: { slug: string; name: string }) {
-  const links = brandPlatforms[slug];
+import { brandPlatforms } from "./cms/social-data";
+export default function BrandSocials({ slug, name, platforms = brandPlatforms }: { slug: string; name: string; platforms?: typeof brandPlatforms }) {
+  const links = platforms[slug];
   if (!links?.length) return null;
   return (
     <nav className="brand-socials" aria-label={`${name} social platforms`}>

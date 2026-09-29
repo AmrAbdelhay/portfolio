@@ -1,0 +1,109 @@
+import { registerHooks } from 'node:module';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+registerHooks({resolve(specifier,context,next){try{return next(specifier,context)}catch(error){if(specifier.startsWith('.'))return next(specifier+'.ts',context);throw error;}}});
+const {contentSchema,defaultContent}=await import('../app/cms/content.ts');
+const {newItem,updateSection}=await import('../app/cms/editing.ts');
+const {GET,POST}=await import('../app/api/admin/content/route.ts');
+const {POST:upload}=await import('../app/api/admin/upload/route.ts');
+test('preserves current portfolio and distinguishes paid from organic',()=>{
+ assert.equal(contentSchema.safeParse(defaultContent).success,true);
+ assert.equal(defaultContent.caseStudies.length,3);
+ assert.equal(defaultContent.aleemDesigns.length,6);
+ assert.deepEqual(defaultContent.rsWorks.map(x=>x.badge),['Organic + Paid','Organic']);
+});
+test('rejects executable links, duplicate slugs and missing stories',()=>{
+ for(const url of ['javascript:alert(1)','//evil.test','/\\evil.test','data:text/html,hello']) {
+  const content=structuredClone(defaultContent);content.projects[0].link=url;
+  assert.equal(contentSchema.safeParse(content).success,false,url);
+ }
+ const content=structuredClone(defaultContent);content.caseStudies[1].slug='noga';assert.equal(contentSchema.safeParse(content).success,false);
+ const missing=structuredClone(defaultContent);delete missing.details.rs;assert.equal(contentSchema.safeParse(missing).success,false);
+});
+test('adding a brand creates a distinct route and its editable story',()=>{
+ const brand=newItem('caseStudies',defaultContent.caseStudies);
+ assert.notEqual(brand.slug,defaultContent.caseStudies[0].slug);
+ assert.equal(brand.template,'standard');
+ const content=updateSection(defaultContent,'caseStudies',[...defaultContent.caseStudies,brand]);
+ assert.ok(content.details[brand.slug]);assert.equal(contentSchema.safeParse(content).success,true);
+});
+test('empty nested lists retain correct item shape',()=>{
+ assert.deepEqual(Object.keys(newItem('chapters',[])),['number','title','text','evidence']);
+ assert.deepEqual(Object.keys(newItem('metrics',[])),['value','label']);
+});
+test('unauthenticated requests cannot read drafts, save, publish or sign uploads',async()=>{
+ const req=()=>new Request('http://localhost/api/admin/content');
+ assert.equal((await GET(req())).status,401);
+ assert.equal((await POST(req())).status,401);
+ assert.equal((await upload(req())).status,401);
+});
+
+test('legacy content exposes missing links and metrics in the editor',()=>{
+ const content=structuredClone(defaultContent);
+ delete content.projects[0].link;delete content.caseStudies[0].metrics;
+ const parsed=contentSchema.parse(content);
+ assert.equal(parsed.projects[0].link,'');assert.deepEqual(parsed.caseStudies[0].metrics,[]);
+});
+
+test('renaming a brand moves its story and links without leaving stale entries',()=>{
+ const content=structuredClone(defaultContent);
+ content.projects[0].link='/work/noga#results';
+ const brands=structuredClone(content.caseStudies);brands[0].slug='noga-home';
+ const edited=updateSection(content,'caseStudies',brands);
+ assert.deepEqual(edited.details['noga-home'],content.details.noga);
+ assert.deepEqual(edited.brandPlatforms['noga-home'],content.brandPlatforms.noga);
+ assert.equal(Object.hasOwn(edited.details,'noga'),false);
+ assert.equal(edited.projects[0].link,'/work/noga-home#results');
+ assert.equal(edited.projects[1].link,'/work/noga-home');
+ assert.equal(edited.caseStudies[0].template,'noga');
+ assert.equal(content.projects[0].link,'/work/noga#results');
+ const renamedAgain=structuredClone(edited.caseStudies);renamedAgain[0].slug='noga';
+ edited.details['noga-home'].intro='Updated story';
+ assert.equal(updateSection(edited,'caseStudies',renamedAgain).details.noga.intro,'Updated story');
+});
+
+test('reordering and removing brands keeps each remaining story attached to its brand',()=>{
+ const reversed=updateSection(defaultContent,'caseStudies',[...defaultContent.caseStudies].reverse());
+ assert.deepEqual(reversed.details,defaultContent.details);
+ const removed=updateSection(defaultContent,'caseStudies',defaultContent.caseStudies.slice(1));
+ assert.equal(Object.hasOwn(removed.details,'noga'),false);
+ assert.deepEqual(removed.details.rs,defaultContent.details.rs);
+});
+
+test('admin routes validate drafts, pass publish intent and report conflicts and outages',async(t)=>{
+ const previousUrl=process.env.NEXT_PUBLIC_SUPABASE_URL;
+ const previousKey=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+ process.env.NEXT_PUBLIC_SUPABASE_URL='https://cms-test.invalid';
+ process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY='test-only-key';
+ t.after(()=>{
+  if(previousUrl===undefined)delete process.env.NEXT_PUBLIC_SUPABASE_URL;else process.env.NEXT_PUBLIC_SUPABASE_URL=previousUrl;
+  if(previousKey===undefined)delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;else process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=previousKey;
+ });
+ let mode='admin';const saved=[];
+ t.mock.method(globalThis,'fetch',async(input,init)=>{
+  const path=new URL(typeof input==='string'?input:input.url??String(input)).pathname;
+  if(mode==='outage')return Response.json({message:'Unavailable'},{status:503});
+  if(path.endsWith('/auth/v1/user'))return Response.json({id:'test-owner',aud:'authenticated',email:'owner@example.test'});
+  if(path.endsWith('/portfolio_admins'))return Response.json(mode==='denied'?null:{user_id:'test-owner'});
+  if(path.endsWith('/portfolio_content'))return Response.json({document:defaultContent,revision:7});
+  if(path.endsWith('/rpc/save_portfolio')){
+   saved.push(JSON.parse(init.body));
+   return mode==='conflict'?Response.json({message:'REVISION_CONFLICT'},{status:400}):Response.json(8);
+  }
+  throw new Error(`Unexpected test request: ${path}`);
+ });
+ const request=(body)=>new Request('http://localhost/api/admin/content',{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer test-only-token'},...(body===undefined?{}:{body:JSON.stringify(body)})});
+ assert.equal((await GET(request())).status,200);
+ for(const action of ['save','publish']){
+  const response=await POST(request({document:defaultContent,revision:7,action}));
+  assert.equal(response.status,200);assert.deepEqual(await response.json(),{revision:8});
+  assert.equal(saved.at(-1).publish_now,action==='publish');
+  assert.equal(saved.at(-1).expected_revision,7);
+ }
+ assert.equal((await POST(request(null))).status,400);
+ assert.equal((await POST(request({document:{},revision:7,action:'publish'}))).status,400);
+ assert.equal(saved.length,2);
+ mode='conflict';assert.equal((await POST(request({document:defaultContent,revision:7,action:'save'}))).status,409);
+ mode='denied';assert.equal((await GET(request())).status,403);assert.equal((await upload(request({}))).status,403);
+ mode='outage';assert.equal((await upload(request({}))).status,503);
+});
