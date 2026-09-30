@@ -1083,3 +1083,9 @@ button {
 .rs-work-copy .rs-count-note{line-height:1.7}
 .rs-work-copy a{align-self:flex-start;margin-top:auto;padding-top:4px}
 @media(max-width:600px){.rs-work-copy{padding:22px}.rs-counts{gap:10px}.rs-counts dd{font-size:30px}}
+/* Automatic motion and manual input share the same native scroll position. */
+.creative-gallery-window{overflow-x:auto;scrollbar-width:thin;scrollbar-color:#56614a #171c16;cursor:grab;touch-action:pan-x pan-y}
+.creative-gallery-window:active{cursor:grabbing}
+.creative-gallery-track{animation:none;transform:none;width:max-content;padding-bottom:12px}
+.creative-design{user-select:none}
+.creative-gallery-window:focus-visible{outline:2px solid var(--lime);outline-offset:4px}

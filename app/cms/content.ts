@@ -80,19 +80,13 @@ export const defaultContent: PortfolioContent = contentSchema.parse({
             url: "/work/rs/designs/rs-de-03.jpeg",
             images: [{ image: "/work/rs/designs/rs-de-03.jpeg", label: "RS DE 3" }],
         },
+
         {
             title: "DE 4",
             description: "Brand visual developed for the RS content pipeline.",
             role: "Graphic design / social creative",
             url: "/work/rs/designs/rs-de-04.jpeg",
             images: [{ image: "/work/rs/designs/rs-de-04.jpeg", label: "DE 4" }],
-        },
-        {
-            title: "RS DE 5",
-            description: "Creative social visual tailored for audience engagement.",
-            role: "Graphic design / social creative",
-            url: "/work/rs/designs/rs-de-05.jpeg",
-            images: [{ image: "/work/rs/designs/rs-de-05.jpeg", label: "RS DE 5" }],
         },
         ...newRSDesigns,
     ], brandPlatforms,
@@ -109,7 +103,7 @@ export function mergePortfolioContent(document: unknown): PortfolioContent {
         : liveWorks;
     const designVersion = typeof live.rsDesignsVersion === "number" ? live.rsDesignsVersion : 0;
     const liveDesigns = Array.isArray(live.rsDesigns) ? live.rsDesigns : defaultContent.rsDesigns;
-    const cleanDesigns = liveDesigns.map(work => ({ ...work, images: work.images.filter(picture => !/\/(?:rs-sc-03|SC%203|SC 3)\.jpeg(?:[?#]|$)/i.test(picture.image)) })).filter(work => work.images.length > 0);
+    const cleanDesigns = liveDesigns.map(work => ({ ...work, images: work.images.filter(picture => !/\/(?:rs-sc-03|SC%203|SC 3|rs-de-05|RS%20DE%205|RS DE 5)\.jpeg(?:[?#]|$)/i.test(picture.image)) })).filter(work => work.images.length > 0);
     const rsDesigns = designVersion < 1 ? [...cleanDesigns, ...defaultContent.rsDesigns.filter(work => !cleanDesigns.some(existing => existing.images.some(picture => work.images.some(candidate => candidate.image === picture.image))))] : cleanDesigns;
     return contentSchema.parse({
         ...defaultContent,

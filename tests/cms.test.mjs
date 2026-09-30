@@ -173,13 +173,21 @@ test('old live RS documents gain new reels once and preserve intentional removal
 
 test('RS design update removes the known screenshot and adds four designs once',()=>{
  const legacy=structuredClone(defaultContent);delete legacy.rsDesignsVersion;
- legacy.rsDesigns=legacy.rsDesigns.slice(0,5);
+ legacy.rsDesigns=legacy.rsDesigns.slice(0,4);
  legacy.rsDesigns.push({title:'SC 3',description:'',role:'',url:'/work/rs/designs/rs-sc-03.jpeg',images:[{image:'/work/rs/designs/rs-sc-03.jpeg',label:'SC 3'}]});
  const migrated=mergePortfolioContent(legacy);
- assert.equal(migrated.rsDesigns.length,9);
+ assert.equal(migrated.rsDesigns.length,8);
  assert.equal(migrated.rsDesigns.some(work=>work.images.some(picture=>picture.image.includes('rs-sc-03'))),false);
- assert.equal(mergePortfolioContent(migrated).rsDesigns.length,9);
- migrated.rsDesigns=migrated.rsDesigns.slice(0,8);
  assert.equal(mergePortfolioContent(migrated).rsDesigns.length,8);
+ migrated.rsDesigns=migrated.rsDesigns.slice(0,7);
+ assert.equal(mergePortfolioContent(migrated).rsDesigns.length,7);
  assert.equal(migrated.rsWorks.length,5);
+});
+
+test('RS excludes the rejected tax-return design from bundled and saved galleries',()=>{
+ assert.equal(defaultContent.rsDesigns.some(work=>work.images.some(image=>image.image.includes('rs-de-05'))),false);
+ const saved=structuredClone(defaultContent);
+ saved.rsDesigns.push({title:'RS DE 5',description:'',role:'',url:'/work/rs/designs/rs-de-05.jpeg',images:[{image:'/work/rs/designs/rs-de-05.jpeg',label:'Rejected'}]});
+ assert.equal(mergePortfolioContent(saved).rsDesigns.length,8);
+ assert.equal(defaultContent.rsDesigns.some(work=>work.images.some(image=>image.image.includes('rs-de-04'))),true);
 });
