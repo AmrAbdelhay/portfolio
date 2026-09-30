@@ -2,7 +2,7 @@ import { z } from "zod";
 import { caseStudies, projects, services, experience, stack, aleemDesigns } from "../portfolio-data";
 import { details } from "./case-details";
 import { rsWorks } from "./rs-data";
-import { rsDesigns as newRSDesigns } from "./rs-designs";
+import { rsDesigns as newRSDesigns, rsDesignPosts } from "./rs-designs";
 import { brandPlatforms } from "./social-data";
 const text = z.string().max(12000);
 const url = text.refine(v => v === "" || (/^\/(?!\/)/.test(v) && !v.includes("\\")) || /^https:\/\//.test(v), "Use an HTTPS link or a local /path");
@@ -29,6 +29,10 @@ export const contentSchema = z.object({
     rsContent: z.array(z.object({ ...work, format: text, text, url, images })).max(200).default([]),
     brandPlatforms: z.record(z.string(), z.array(z.object({ platform: z.enum(["Facebook", "Instagram"]), url }))),
 }).transform(value => {
+    for (const design of value.rsDesigns) {
+        const post = design.images.map(image => rsDesignPosts[image.image]).find(Boolean);
+        if (post) { design.url = post; design.role = "Content writing & graphic design"; }
+    }
     for (const brand of value.caseStudies) {
         if (brand.template !== "rs") continue;
         if (brand.role === "Sales → Operations → Marketing") brand.role = "Digital Marketing · Content · Design · Paid Media";

@@ -131,7 +131,7 @@ test('RS media round-trips carousels, campaign metrics and Arabic copy and rejec
 
 test('RS design cards accept direct links to each creative asset',()=>{
  const parsed = contentSchema.parse(defaultContent);
- assert.equal(parsed.rsDesigns[0].url, '/work/rs/designs/rs-de-01.jpeg');
+ assert.equal(parsed.rsDesigns[0].url, 'https://www.facebook.com/share/p/19aJDo4GhU/');
  assert.equal(parsed.rsDesigns[0].images[0].image, '/work/rs/designs/rs-de-01.jpeg');
 });
 
@@ -190,4 +190,12 @@ test('RS excludes the rejected tax-return design from bundled and saved gallerie
  saved.rsDesigns.push({title:'RS DE 5',description:'',role:'',url:'/work/rs/designs/rs-de-05.jpeg',images:[{image:'/work/rs/designs/rs-de-05.jpeg',label:'Rejected'}]});
  assert.equal(mergePortfolioContent(saved).rsDesigns.length,8);
  assert.equal(defaultContent.rsDesigns.some(work=>work.images.some(image=>image.image.includes('rs-de-04'))),true);
+});
+
+
+test("RS designs open the supplied Facebook posts and credit content plus design",()=>{
+ const parsed=mergePortfolioContent(defaultContent);
+ assert.equal(parsed.rsDesigns.length,8);
+ assert.equal(new Set(parsed.rsDesigns.map(work=>work.url)).size,8);
+ for(const work of parsed.rsDesigns) { assert.match(work.url,/^https:\/\/www\.facebook\.com\/share\/p\//); assert.equal(work.role,"Content writing & graphic design"); }
 });
