@@ -199,3 +199,13 @@ test("RS designs open the supplied Facebook posts and credit content plus design
  assert.equal(new Set(parsed.rsDesigns.map(work=>work.url)).size,8);
  for(const work of parsed.rsDesigns) { assert.match(work.url,/^https:\/\/www\.facebook\.com\/share\/p\//); assert.equal(work.role,"Content writing & graphic design"); }
 });
+
+test('financial accountant screenshot supplies engagement and repairs older published values',()=>{
+ const legacy=structuredClone(defaultContent);
+ const reel=legacy.rsWorks.find(work=>work.id==='financial-accountant');
+ reel.likes='';reel.comments='';reel.shares='';reel.url='https://www.facebook.com/share/v/1DwPdQJNCW/';
+ const updated=mergePortfolioContent(legacy).rsWorks.find(work=>work.id==='financial-accountant');
+ assert.deepEqual([updated.likes,updated.comments,updated.shares],['148','17','14']);
+ assert.equal(updated.views,'');
+ assert.equal(updated.url,'https://www.facebook.com/reel/1382245969975501');
+});

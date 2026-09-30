@@ -29,6 +29,14 @@ export const contentSchema = z.object({
     rsContent: z.array(z.object({ ...work, format: text, text, url, images })).max(200).default([]),
     brandPlatforms: z.record(z.string(), z.array(z.object({ platform: z.enum(["Facebook", "Instagram"]), url }))),
 }).transform(value => {
+    const financialAccountant = value.rsWorks.find(work => work.id === "financial-accountant");
+    if (financialAccountant) {
+        financialAccountant.likes ||= "148";
+        financialAccountant.comments ||= "17";
+        financialAccountant.shares ||= "14";
+        if (financialAccountant.url === "https://www.facebook.com/share/v/1DwPdQJNCW/")
+            financialAccountant.url = "https://www.facebook.com/reel/1382245969975501";
+    }
     for (const design of value.rsDesigns) {
         const post = design.images.map(image => rsDesignPosts[image.image]).find(Boolean);
         if (post) { design.url = post; design.role = "Content writing & graphic design"; }
