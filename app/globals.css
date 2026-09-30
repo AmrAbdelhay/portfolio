@@ -418,7 +418,7 @@ button {
   padding-bottom: 5px;
 }
 .case-work-link span { margin-left: 8px; }
-.aleem-gallery {
+.creative-gallery {
   margin-top: 42px;
   padding: 42px 0 22px;
   border: 1px solid var(--line);
@@ -426,53 +426,51 @@ button {
   overflow: hidden;
   scroll-margin-top: 28px;
 }
-.aleem-gallery-heading {
+.creative-gallery-heading {
   display: flex;
   align-items: end;
   justify-content: space-between;
   gap: 24px;
   padding: 0 42px 30px;
 }
-.gallery-eyebrow, .gallery-count {
+.creative-gallery-eyebrow, .creative-gallery-count {
   color: var(--lime);
   font-size: 12px;
   letter-spacing: .13em;
 }
-.aleem-gallery-heading h2 {
+.creative-gallery-heading h2 {
   font-size: clamp(30px, 4vw, 52px);
   letter-spacing: -.05em;
   line-height: 1.1;
   margin: 16px 0 10px;
 }
-.aleem-gallery-heading p, .aleem-gallery-tip {
+.creative-gallery-heading p, .creative-gallery-tip {
   color: #aeb2a9;
   font-size: 14px;
   line-height: 1.5;
   margin: 0;
 }
-.aleem-gallery-window { overflow: hidden; }
-.aleem-gallery-track {
+.creative-gallery-window { overflow: hidden; }
+.creative-gallery-track {
   display: flex;
   width: max-content;
-  gap: 18px;
-  padding: 16px 18px;
-  animation: aleem-scroll 38s linear infinite;
+  gap: 12px;
+  padding: 0 0 0 18px;
+  animation: creative-scroll 38s linear infinite;
 }
-.aleem-gallery-window:hover .aleem-gallery-track,
-.aleem-gallery-window:focus-within .aleem-gallery-track { animation-play-state: paused; }
-.aleem-design {
+.creative-gallery-window:hover .creative-gallery-track,
+.creative-gallery-window:focus-within .creative-gallery-track { animation-play-state: paused; }
+.creative-design {
   position: relative;
   display: block;
   width: clamp(230px, 26vw, 340px);
   height: 355px;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 12px;
   background: #eee9df;
-  transition: transform .3s ease;
 }
-.aleem-design:hover, .aleem-design:focus-visible { transform: scale(1.035); z-index: 1; }
-.aleem-design img { width: 100%; height: 100%; object-fit: contain; }
-.aleem-design span {
+.creative-design img { width: 100%; height: 100%; object-fit: contain; }
+.creative-design span {
   position: absolute;
   right: 12px;
   bottom: 12px;
@@ -484,8 +482,8 @@ button {
   background: #172521;
   color: white;
 }
-.aleem-gallery-tip { padding: 16px 42px 0; font-size: 12px; }
-@keyframes aleem-scroll { to { transform: translateX(calc(-50%)); } }
+.creative-gallery-tip { padding: 16px 42px 0; font-size: 12px; }
+@keyframes creative-scroll { to { transform: translateX(-50%); } }
 .tag-row {
   display: flex;
   flex-wrap: wrap;
@@ -929,14 +927,14 @@ button {
   .case-copy h2 {
     margin-top: 30px;
   }
-  .aleem-gallery { padding-top: 28px; }
-  .aleem-gallery-heading { padding: 0 24px 20px; }
-  .gallery-count { display: none; }
-  .aleem-gallery-window { overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; }
-  .aleem-gallery-track { animation: none; }
-  .aleem-design:nth-child(n+7) { display: none; }
-  .aleem-design { width: 250px; height: 270px; }
-  .aleem-gallery-tip { padding: 12px 24px 0; }
+  .creative-gallery { padding-top: 28px; }
+  .creative-gallery-heading { padding: 0 24px 20px; }
+  .creative-gallery-count { display: none; }
+  .creative-gallery-window { overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; }
+  .creative-gallery-track { animation: none; }
+  .creative-design[aria-hidden="true"] { display: none; }
+  .creative-design { width: 250px; height: 270px; }
+  .creative-gallery-tip { padding: 12px 24px 0; }
   .mini-metrics {
     gap: 8px;
   }
@@ -975,7 +973,7 @@ button {
     scroll-behavior: auto;
   }
   .service-track,
-  .aleem-gallery-track,
+  .creative-gallery-track,
   .hero-portrait,
   .reveal {
     animation: none;
@@ -984,6 +982,8 @@ button {
   .button {
     transition: none;
   }
+  .creative-gallery-window { overflow-x: auto; }
+  .creative-design[aria-hidden="true"] { display: none; }
 }
 
 /* Individual brand stories */
@@ -1059,6 +1059,9 @@ button {
 .rs-counts dd{font-size:29px;letter-spacing:-.05em;margin:0;color:#eff3e9}
 .rs-work-copy .rs-count-note{font-size:11px;color:#a0ab99}
 .rs-work-copy a{font-size:12px;color:var(--lime);margin-top:6px}
+.rs-results-shot{display:block;margin:8px 0 4px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#101510}
+.rs-results-shot img{display:block;width:100%;max-height:200px;object-fit:contain}
+.rs-results-shot span{display:block;padding:8px 10px;color:var(--lime);font-size:11px}
 @media(max-width:1000px){.rs-work{flex-basis:85%}}
 @media(max-width:600px){.rs-gallery-heading{display:block}.rs-gallery-controls{margin-top:20px}.rs-work{flex-basis:88%;display:block}.rs-video-wrap video{max-height:440px}.rs-work-copy{padding:22px}.rs-counts{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.rs-counts dd{font-size:24px}}
 

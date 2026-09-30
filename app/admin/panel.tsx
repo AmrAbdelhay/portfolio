@@ -5,10 +5,10 @@ import { contentSchema, type PortfolioContent } from "../cms/content";
 import "./style.css";
 import { newItem, updateSection, type EditorValue as Value } from "../cms/editing";
 
-const labels: Record<string, string> = { rsDesigns: "RS · التصميمات", rsCampaigns: "RS · نتائج الحملات", rsContent: "RS · الكونتنت", images: "الصور / شرائح الكاروسيل", objective: "هدف الحملة", format: "نوع المحتوى (كابشن / سكريبت / خطة)", template: "قالب صفحة البراند", profile: "بياناتي", caseStudies: "بيانات البراند", projects: "مكتبة الأعمال", services: "الخدمات", experience: "الخبرات", stack: "الأدوات والمهارات", aleemDesigns: "تصميمات عليم", details: "قصة البراند", rsWorks: "RS · الفيديوهات", brandPlatforms: "روابط التواصل", name: "الاسم", title: "العنوان", description: "الوصف", image: "الصورة", video: "الفيديو", poster: "غلاف الفيديو", portrait: "الصورة الشخصية", url: "الرابط", link: "الرابط", role: "دوري", summary: "نبذة", slug: "اسم الرابط", headline: "العنوان الرئيسي", headlineSecond: "السطر الثاني", intro: "المقدمة", about: "عنّي", location: "الموقع", period: "الفترة", market: "السوق", tags: "التصنيفات", metrics: "النتائج", value: "القيمة", label: "الوصف", chapters: "أقسام القصة", text: "النص", evidence: "الأعمال الداعمة", views: "المشاهدات", likes: "الإعجابات", comments: "التعليقات", shares: "المشاركات", badge: "نوع الوصول", note: "ملاحظة", platform: "المنصة", items: "العناصر", accent: "لون البراند", assetHint: "وصف الهوية", monogram: "الحروف المختصرة", short: "عنوان مختصر", category: "التصنيف", status: "الحالة", tone: "لون البطاقة", company: "الشركة", number: "الرقم", id: "المعرّف", github: "GitHub" };
-const choices: Record<string, string[]> = { template: ["standard", "noga", "rs", "aleem"], badge: ["Organic", "Organic + Paid"], platform: ["Facebook", "Instagram"], status: ["live", "placeholder"], tone: ["lime", "blue", "orange", "cyan", "violet", "rose", "navy", "gold"] };
-const choiceLabels: Record<string, string> = { standard: "قصة براند", noga: "قصة + رابط متجر Noga", rs: "RS · تصميمات وفيديوهات وحملات وكونتنت", aleem: "قصة + تصميمات عليم" };
-const assetFields = new Set(["image", "video", "poster", "portrait"]);
+const labels: Record<string, string> = { rsDesigns: "RS · التصميمات", nogaDesigns: "Noga · التصميمات", rsCampaigns: "RS · نتائج الحملات", rsContent: "RS · الكونتنت", rsResultsImage: "لقطة نتائج الفيديو", resultsImage: "صورة نتائج الفيديو", images: "الصور / شرائح الكاروسيل", objective: "هدف الحملة", format: "نوع المحتوى (كابشن / سكريبت / خطة)", template: "قالب صفحة البراند", profile: "بياناتي", caseStudies: "بيانات البراند", projects: "مكتبة الأعمال", services: "الخدمات", experience: "الخبرات", stack: "الأدوات والمهارات", aleemDesigns: "تصميمات عليم", details: "قصة البراند", rsWorks: "RS · الفيديوهات", brandPlatforms: "روابط التواصل", name: "الاسم", title: "العنوان", description: "الوصف", image: "الصورة", video: "الفيديو", poster: "غلاف الفيديو", portrait: "الصورة الشخصية", url: "الرابط", link: "الرابط", role: "دوري", summary: "نبذة", slug: "اسم الرابط", headline: "العنوان الرئيسي", headlineSecond: "السطر الثاني", intro: "المقدمة", about: "عنّي", location: "الموقع", period: "الفترة", market: "السوق", tags: "التصنيفات", metrics: "النتائج", value: "القيمة", label: "الوصف", chapters: "أقسام القصة", text: "النص", evidence: "الأعمال الداعمة", views: "المشاهدات", likes: "الإعجابات", comments: "التعليقات", shares: "المشاركات", badge: "نوع الوصول", note: "ملاحظة", platform: "المنصة", items: "العناصر", accent: "لون البراند", assetHint: "وصف الهوية", monogram: "الحروف المختصرة", short: "عنوان مختصر", category: "التصنيف", status: "الحالة", tone: "لون البطاقة", company: "الشركة", number: "الرقم", id: "المعرّف", github: "GitHub" };
+const choices: Record<string, string[]> = { template: ["standard", "noga", "rs", "aleem"], badge: ["", "Organic", "Organic + Paid", "Results provided"], platform: ["Facebook", "Instagram"], status: ["live", "placeholder"], tone: ["lime", "blue", "orange", "cyan", "violet", "rose", "navy", "gold"] };
+const choiceLabels: Record<string, string> = { "": "غير محدد", standard: "قصة براند", noga: "قصة + رابط متجر Noga", rs: "RS · تصميمات وفيديوهات وحملات وكونتنت", aleem: "قصة + تصميمات عليم" };
+const assetFields = new Set(["image", "video", "poster", "portrait", "resultsImage"]);
 const generalKeys: (keyof PortfolioContent)[] = ["profile", "services", "projects", "experience", "stack"];
 
 function AssetEditor({ field, value, change, upload }: { field: string; value: string; change: (v: string) => void; upload: (file: File) => Promise<string> }) {
@@ -66,9 +66,11 @@ function Editor({ value, change, field, upload }: {
     return <div className="cms-fields">{Object.entries(value).map(([key, item]) => <div key={key}>{typeof item !== "string" && <h3>{labels[key] ?? key}</h3>}<Editor value={item} change={v => change({ ...value, [key]: v })} field={key} upload={upload} /></div>)}</div>;
 }
 
-function RSDesignEditor({ value, change, upload, busy }: {
+function DesignEditor({ value, change, upload, busy, field, brand }: {
     value: PortfolioContent["rsDesigns"];
     change: (v: PortfolioContent["rsDesigns"]) => void;
+    field: "rsDesigns" | "nogaDesigns";
+    brand: string;
     upload: (file: File) => Promise<string>;
     busy: boolean;
 }) {
@@ -136,7 +138,7 @@ function BrandPage({ slug, content, update, upload, busy, onRemove }: {
                 <h3>{labels.rsWorks}</h3>
                 <Editor field="rsWorks" value={content.rsWorks as unknown as Value} upload={upload} change={v => update("rsWorks", v as unknown as typeof content.rsWorks)} />
                 <h3>{labels.rsDesigns}</h3>
-                <RSDesignEditor value={content.rsDesigns} change={v => update("rsDesigns", v)} upload={upload} busy={busy} />
+                <DesignEditor field="rsDesigns" brand="RS" value={content.rsDesigns} change={v => update("rsDesigns", v)} upload={upload} busy={busy} />
                 <h3>{labels.rsCampaigns}</h3>
                 <Editor field="rsCampaigns" value={content.rsCampaigns as unknown as Value} upload={upload} change={v => update("rsCampaigns", v as unknown as typeof content.rsCampaigns)} />
                 <h3>{labels.rsContent}</h3>
@@ -145,6 +147,10 @@ function BrandPage({ slug, content, update, upload, busy, onRemove }: {
             {slug === "aleem" && <>
                 <h3>{labels.aleemDesigns}</h3>
                 <Editor field="aleemDesigns" value={content.aleemDesigns as unknown as Value} upload={upload} change={v => update("aleemDesigns", v as unknown as typeof content.aleemDesigns)} />
+            </>}
+            {slug === "noga" && <>
+                <h3>{labels.nogaDesigns}</h3>
+                <DesignEditor field="nogaDesigns" brand="Noga" value={content.nogaDesigns} change={v => update("nogaDesigns", v)} upload={upload} busy={busy} />
             </>}
             <div className="cms-danger">
                 <button type="button" onClick={() => onRemove(slug)}>حذف البراند ده نهائيًا</button>

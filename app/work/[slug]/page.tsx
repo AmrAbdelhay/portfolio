@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { publishedContent } from "../../cms/server";
 
-import RSPortfolio from "../../rs-portfolio";
+import RSPortfolio, { DesignGallery } from "../../rs-portfolio";
 import RSGallery from "../../rs-gallery";
 import BrandSocials from "../../brand-socials";
 
@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function CasePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const { caseStudies, details, aleemDesigns, rsWorks, rsDesigns, rsCampaigns, rsContent, brandPlatforms } = await publishedContent();
+  const { caseStudies, details, aleemDesigns, nogaDesigns, rsWorks, rsDesigns, rsCampaigns, rsContent, brandPlatforms } = await publishedContent();
   if (!Object.hasOwn(details, slug) || !caseStudies.some(item => item.slug === slug)) notFound();
   const detail = details[slug as keyof typeof details];
   const study = caseStudies.find((item) => item.slug === slug)!;
@@ -28,17 +28,8 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
     {study.template === "rs" && <><nav className="rs-section-nav shell" aria-label="RS work categories">{!!rsDesigns.length && <a href="#rs-designs">Designs</a>}{!!rsWorks.length && <a href="#rs-creative">Videos</a>}{!!rsCampaigns.length && <a href="#rs-campaigns">Campaign results</a>}{!!rsContent.length && <a href="#rs-content">Content writing</a>}</nav><RSPortfolio designs={rsDesigns} campaigns={rsCampaigns} content={rsContent} />{!!rsWorks.length && <RSGallery works={rsWorks} />}</>}
     <section className="detail-chapters shell"><div className="section-label"><span>01</span> My work at {study.name}</div><div className="detail-chapter-list">{detail.chapters.filter(chapter => study.template !== "rs" || !/^(Sales|Operations) ·/.test(chapter.title)).map(chapter => <article key={chapter.number}><span className="chapter-number">{chapter.number}</span><div><h2>{chapter.title}</h2><p>{chapter.text}</p><small>{chapter.evidence}</small></div></article>)}</div></section>
     {study.template === "rs" && <details className="rs-history shell"><summary>Earlier experience · Sales & operations</summary><div className="detail-chapter-list">{detail.chapters.filter(chapter => /^(Sales|Operations) ·/.test(chapter.title)).map(chapter => <article key={chapter.number}><div><h2>{chapter.title}</h2><p>{chapter.text}</p><small>{chapter.evidence}</small></div></article>)}</div>{!!study.metrics.length && <div className="detail-metrics" aria-label="Earlier sales role results">{study.metrics.map((metric, i) => <div key={i}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}<p>Earlier sales role · Approximate results from the initial three-month period, separate from marketing campaign performance.</p></div>}</details>}
-    {study.template === "aleem" && (
-        <section className="aleem-gallery shell" id="aleem-gallery">
-          <div className="aleem-gallery-heading"><div><span className="gallery-eyebrow">ALEEM · SELECTED CREATIVE</span><h2>Designs for learning in action.</h2><p>Arabic social designs for courses and business education. Select a design to see it in full.</p></div><span className="gallery-count">01 — {String(aleemDesigns.length).padStart(2, "0")}</span></div>
-          <div className="aleem-gallery-window" aria-label="Aleem design gallery">
-            <div className="aleem-gallery-track">
-              {[...aleemDesigns, ...aleemDesigns].map((design, index) => <a className="aleem-design" href={design.image} target="_blank" rel="noreferrer" aria-label={`View Aleem design: ${design.label}`} key={`${design.image}-${index}`} tabIndex={index >= aleemDesigns.length ? -1 : undefined}><img src={design.image} alt={index < aleemDesigns.length ? `تصميم عليم: ${design.label}` : ""} loading="lazy" /><span aria-hidden="true">↗</span></a>)}
-            </div>
-          </div>
-          <p className="aleem-gallery-tip">Scroll to browse · Hover to pause</p>
-        </section>
-    )}
+    {study.template === "aleem" && <DesignGallery brand="Aleem" designs={aleemDesigns.map(design => ({ title: design.label, description: "Arabic educational design crafted for Aleem’s audience and learning goals.", role: "Social design / visual communication", url: design.image, images: [{ image: design.image, label: design.label }] }))} />}
+    {study.template === "noga" && <DesignGallery brand="Noga" designs={nogaDesigns} />}
     {study.template === "noga" && <section className="detail-website shell"><div><span className="section-label"><span>02</span> Website</span><h2>The storefront is part of the story.</h2><p>Browse the website work and code behind the Noga Home store.</p></div><a className="button primary" href="https://github.com/AmrAbdelhay/noga-home-store" target="_blank" rel="noreferrer">View store project ↗</a></section>}
     <footer className="detail-footer shell"><Link href="/#work">← Back to all work</Link><span>Amr Ahmed Abdelhay · 2026</span></footer>
   </main>;

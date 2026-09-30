@@ -20,6 +20,7 @@ export async function publishedContent() {
         const merged = {
             ...defaultContent,
             ...live,
+            nogaDesigns: Array.isArray(live.nogaDesigns) ? live.nogaDesigns : defaultContent.nogaDesigns,
             rsDesigns: Array.isArray(live.rsDesigns) && live.rsDesigns.length > 0 ? live.rsDesigns : defaultContent.rsDesigns,
             rsCampaigns: Array.isArray(live.rsCampaigns) && live.rsCampaigns.length > 0 ? live.rsCampaigns : defaultContent.rsCampaigns,
             rsContent: Array.isArray(live.rsContent) && live.rsContent.length > 0 ? live.rsContent : defaultContent.rsContent,

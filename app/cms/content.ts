@@ -9,6 +9,7 @@ const metric = z.object({ value: text, label: text });
 const chapter = z.object({ number: text, title: text, text, evidence: text });
 const images = z.array(z.object({ image: url, label: text })).max(100);
 const work = { title: text, description: text, role: text };
+const designWork = z.object({ ...work, url: url.default(""), images });
 export const contentSchema = z.object({
     profile: z.object({ name: text.min(1), location: text, title: text, headline: text, headlineSecond: text, intro: text, portrait: url, about: text, github: url }),
     services: z.array(text).max(50),
@@ -17,9 +18,10 @@ export const contentSchema = z.object({
     experience: z.array(z.object({ period: text, role: text, company: text, description: text })).max(50),
     stack: z.array(z.object({ name: text, items: z.array(text) })).max(50),
     aleemDesigns: z.array(z.object({ image: url, label: text })).max(200),
+    nogaDesigns: z.array(designWork).max(200).default([]),
     details: z.record(z.string(), z.object({ headline: text, intro: text, chapters: z.array(chapter) })),
-    rsWorks: z.array(z.object({ id: text, title: text, description: text, role: text, badge: z.enum(["Organic", "Organic + Paid"]), views: text, likes: text, comments: text, shares: text, url, note: text, video: url, poster: url })).max(200),
-    rsDesigns: z.array(z.object({ ...work, url: url.default(""), images })).max(200).default([]),
+    rsWorks: z.array(z.object({ id: text, title: text, description: text, role: text, badge: z.enum(["Organic", "Organic + Paid", "Results provided", ""]), views: text, likes: text, comments: text, shares: text, url, note: text, video: url, poster: url, resultsImage: url.default("") })).max(200),
+    rsDesigns: z.array(designWork).max(200).default([]),
     rsCampaigns: z.array(z.object({ ...work, objective: text, period: text, metrics: z.array(metric), images, note: text })).max(200).default([]),
     rsContent: z.array(z.object({ ...work, format: text, text, url, images })).max(200).default([]),
     brandPlatforms: z.record(z.string(), z.array(z.object({ platform: z.enum(["Facebook", "Instagram"]), url }))),

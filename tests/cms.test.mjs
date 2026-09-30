@@ -10,7 +10,7 @@ test('preserves current portfolio and distinguishes paid from organic',()=>{
  assert.equal(contentSchema.safeParse(defaultContent).success,true);
  assert.equal(defaultContent.caseStudies.length,3);
  assert.equal(defaultContent.aleemDesigns.length,6);
- assert.deepEqual(defaultContent.rsWorks.map(x=>x.badge),['Organic + Paid','Organic']);
+ assert.deepEqual(defaultContent.rsWorks.map(x=>x.badge),['Organic + Paid','Organic','Results provided','Results provided','']);
 });
 test('rejects executable links, duplicate slugs and missing stories',()=>{
  for(const url of ['javascript:alert(1)','//evil.test','/\\evil.test','data:text/html,hello']) {
@@ -113,7 +113,7 @@ test('RS legacy documents gain galleries without losing existing videos and resu
  delete legacy.rsDesigns;delete legacy.rsCampaigns;delete legacy.rsContent;
  const parsed=contentSchema.parse(legacy);
  assert.deepEqual(parsed.rsDesigns,[]);assert.deepEqual(parsed.rsCampaigns,[]);assert.deepEqual(parsed.rsContent,[]);
- assert.equal(parsed.rsWorks.length,2);assert.equal(parsed.caseStudies.find(b=>b.template==='rs').metrics.length,2);
+ assert.equal(parsed.rsWorks.length,5);assert.equal(parsed.caseStudies.find(b=>b.template==='rs').metrics.length,2);
  for(const section of ['rsDesigns','rsCampaigns','rsContent']) {
   parsed[section].push(newItem(section,[]));
   assert.equal(contentSchema.safeParse(parsed).success,true);
@@ -133,4 +133,29 @@ test('RS design cards accept direct links to each creative asset',()=>{
  const parsed = contentSchema.parse(defaultContent);
  assert.equal(parsed.rsDesigns[0].url, '/work/rs/designs/rs-de-01.jpeg');
  assert.equal(parsed.rsDesigns[0].images[0].image, '/work/rs/designs/rs-de-01.jpeg');
+});
+
+test('Noga designs can be added with uploaded images and older content defaults safely',()=>{
+ const legacy=structuredClone(defaultContent);delete legacy.nogaDesigns;
+ const parsed=contentSchema.parse(legacy);
+ assert.deepEqual(parsed.nogaDesigns,[]);
+ parsed.nogaDesigns.push(newItem('nogaDesigns',[]));
+ parsed.nogaDesigns[0].title='Noga product design';
+ parsed.nogaDesigns[0].images=[{image:'https://example.com/noga.webp',label:'Product design'}];
+ assert.equal(contentSchema.safeParse(parsed).success,true);
+ parsed.nogaDesigns[0].images[0].image='javascript:alert(1)';
+ assert.equal(contentSchema.safeParse(parsed).success,false);
+});
+
+test('RS reels retain optional result screenshots and new video entries validate',()=>{
+ const parsed=contentSchema.parse(defaultContent);
+ assert.equal(parsed.rsWorks.length,5);
+ assert.equal(parsed.rsWorks.find(work=>work.id==='financial-accountant').resultsImage,'/work/rs/financial-accountant-results.png');
+ const secondReel=parsed.rsWorks.find(work=>work.id==='financial-accountant-2');
+ assert.equal(secondReel.resultsImage,'/work/rs/financial-accountant-2-results.jpeg');
+ assert.deepEqual([secondReel.views,secondReel.likes,secondReel.comments,secondReel.shares],['1M','2.9K','227','150']);
+ assert.equal(secondReel.url,'https://www.facebook.com/reel/1817130995470717');
+ assert.equal(parsed.rsWorks.find(work=>work.id==='graduation').badge,'');
+ const legacy=structuredClone(defaultContent);delete legacy.rsWorks[0].resultsImage;
+ assert.equal(contentSchema.safeParse(legacy).success,true);
 });
