@@ -15,3 +15,15 @@ export const rsDesignPosts: Record<string, string> = {
   "/work/rs/document-retention.jpg": "https://www.facebook.com/share/p/19SqwrSnwo/",
   "/work/rs/tax-audit.jpeg": "https://www.facebook.com/share/p/1EgrCmwVab/",
 };
+
+// Reach labels supplied by the portfolio owner for these exact posts.
+export const rsDesignReach: Record<string, "Ad" | "Organic"> = {
+  "https://www.facebook.com/share/p/19aJDo4GhU/": "Ad",
+  "https://www.facebook.com/share/p/1C3bA2mqSt/": "Ad",
+  "https://www.facebook.com/share/p/14o4Hss9mAe/": "Ad",
+  "https://www.facebook.com/share/p/19RFE6dL6w/": "Organic",
+  "https://www.facebook.com/share/p/1EZDNqgEL3/": "Organic",
+  "https://www.facebook.com/share/p/19PqX8Y7me/": "Ad",
+  "https://www.facebook.com/share/p/19SqwrSnwo/": "Organic",
+  "https://www.facebook.com/share/p/1EgrCmwVab/": "Organic",
+};

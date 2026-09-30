@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import type { PortfolioContent } from "./cms/content";
+import { rsDesignReach } from "./cms/rs-designs";
 
 type Picture = { image: string; label: string };
 function Pictures({ images, title }: { images: Picture[]; title: string }) {
@@ -60,7 +61,8 @@ export function DesignGallery({ brand, designs }: { brand: string; designs: Port
     <div className="creative-gallery-window" ref={rail} tabIndex={0} aria-label={`${brand} design gallery`} onMouseEnter={() => { held.current = true; }} onMouseLeave={() => { held.current = false; }} onFocusCapture={() => { held.current = true; }} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) held.current = false; }} onPointerDown={event => { if (event.pointerType !== "mouse" || event.button !== 0) return; drag.current = { x: event.clientX, left: event.currentTarget.scrollLeft, moved: false }; suppressClick.current = false; }} onPointerMove={event => { const start = drag.current; if (!start) return; if (Math.abs(event.clientX - start.x) > 5) { start.moved = true; suppressClick.current = true; event.currentTarget.setPointerCapture(event.pointerId); event.currentTarget.scrollLeft = start.left - (event.clientX - start.x); } }} onPointerUp={() => { drag.current = null; pauseUntil.current = performance.now() + 2500; }} onPointerCancel={() => { drag.current = null; }} onClickCapture={event => { if (suppressClick.current) { event.preventDefault(); event.stopPropagation(); suppressClick.current = false; } }} onDragStart={event => event.preventDefault()}>
       <div className="creative-gallery-track">
         {pictures.map((picture, index) => {
-          return <a className="creative-design" href={picture.url} target="_blank" rel="noreferrer" aria-label={`View ${brand} design: ${picture.label}`} key={`${picture.image}-${index}`}><img src={picture.image} alt={picture.label} loading="lazy" draggable={false} /><span aria-hidden="true">↗</span></a>;
+          const reach = brand === "RS" ? rsDesignReach[picture.url] : undefined;
+          return <a className="creative-design" href={picture.url} target="_blank" rel="noreferrer" aria-label={`View ${brand} design: ${picture.label}${reach ? ` (${reach})` : ""}`} key={`${picture.image}-${index}`}><img src={picture.image} alt={picture.label} loading="lazy" draggable={false} />{reach && <span className={`creative-reach ${reach === "Organic" ? "organic" : ""}`}>{reach}</span>}<span aria-hidden="true">↗</span></a>;
         })}
       </div>
     </div>
