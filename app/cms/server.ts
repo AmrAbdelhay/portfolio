@@ -14,7 +14,17 @@ export async function publishedContent() {
         const { data, error } = await database().from("portfolio_content").select("document").eq("id", "published").maybeSingle();
         if (error)
             throw error;
-        return data ? contentSchema.parse(data.document) : defaultContent;
+        if (!data)
+            return defaultContent;
+        const live = data.document ?? {};
+        const merged = {
+            ...defaultContent,
+            ...live,
+            rsDesigns: Array.isArray(live.rsDesigns) && live.rsDesigns.length > 0 ? live.rsDesigns : defaultContent.rsDesigns,
+            rsCampaigns: Array.isArray(live.rsCampaigns) && live.rsCampaigns.length > 0 ? live.rsCampaigns : defaultContent.rsCampaigns,
+            rsContent: Array.isArray(live.rsContent) && live.rsContent.length > 0 ? live.rsContent : defaultContent.rsContent,
+        };
+        return contentSchema.parse(merged);
     }
     catch {
         console.error("Published portfolio content unavailable; using bundled content.");

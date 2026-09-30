@@ -19,7 +19,7 @@ export const contentSchema = z.object({
     aleemDesigns: z.array(z.object({ image: url, label: text })).max(200),
     details: z.record(z.string(), z.object({ headline: text, intro: text, chapters: z.array(chapter) })),
     rsWorks: z.array(z.object({ id: text, title: text, description: text, role: text, badge: z.enum(["Organic", "Organic + Paid"]), views: text, likes: text, comments: text, shares: text, url, note: text, video: url, poster: url })).max(200),
-    rsDesigns: z.array(z.object({ ...work, images })).max(200).default([]),
+    rsDesigns: z.array(z.object({ ...work, url: url.default(""), images })).max(200).default([]),
     rsCampaigns: z.array(z.object({ ...work, objective: text, period: text, metrics: z.array(metric), images, note: text })).max(200).default([]),
     rsContent: z.array(z.object({ ...work, format: text, text, url, images })).max(200).default([]),
     brandPlatforms: z.record(z.string(), z.array(z.object({ platform: z.enum(["Facebook", "Instagram"]), url }))),
@@ -53,5 +53,48 @@ export const contentSchema = z.object({
 export type PortfolioContent = z.infer<typeof contentSchema>;
 export const defaultContent: PortfolioContent = contentSchema.parse({
     profile: { name: "Amr Ahmed Abdelhay", location: "Cairo, Egypt · Open to opportunities", title: "Digital Marketing & Brand Growth Specialist", headline: "I build brands", headlineSecond: "from the ground up.", intro: "connecting strategy, content, paid media, design, sales, and digital execution.", portrait: "/amr-ahmed-abdelhay.jpeg", github: "https://github.com/AmrAbdelhay", about: "With a 2020 degree in Management Information Systems, I bring a business-first lens to creative work. I moved from sales and Odoo-based operations into end-to-end marketing—then expanded into brand design, short-form video, AI-assisted production, Flutter, and e-commerce development." },
-    caseStudies, projects, services, experience, stack, aleemDesigns, details, rsWorks, brandPlatforms,
+    caseStudies, projects, services, experience, stack, aleemDesigns, details, rsWorks, rsDesigns: [
+        {
+            title: "RS DE1",
+            description: "Social media design concept for RS brand storytelling.",
+            role: "Graphic design / social creative",
+            url: "/work/rs/designs/rs-de-01.jpeg",
+            images: [{ image: "/work/rs/designs/rs-de-01.jpeg", label: "RS DE1" }],
+        },
+        {
+            title: "RS DE2",
+            description: "Visual creative supporting RS campaign messaging.",
+            role: "Graphic design / social creative",
+            url: "/work/rs/designs/rs-de-02.jpeg",
+            images: [{ image: "/work/rs/designs/rs-de-02.jpeg", label: "RS DE2" }],
+        },
+        {
+            title: "RS DE 3",
+            description: "RS design asset for educational social content.",
+            role: "Graphic design / social creative",
+            url: "/work/rs/designs/rs-de-03.jpeg",
+            images: [{ image: "/work/rs/designs/rs-de-03.jpeg", label: "RS DE 3" }],
+        },
+        {
+            title: "DE 4",
+            description: "Brand visual developed for the RS content pipeline.",
+            role: "Graphic design / social creative",
+            url: "/work/rs/designs/rs-de-04.jpeg",
+            images: [{ image: "/work/rs/designs/rs-de-04.jpeg", label: "DE 4" }],
+        },
+        {
+            title: "RS DE 5",
+            description: "Creative social visual tailored for audience engagement.",
+            role: "Graphic design / social creative",
+            url: "/work/rs/designs/rs-de-05.jpeg",
+            images: [{ image: "/work/rs/designs/rs-de-05.jpeg", label: "RS DE 5" }],
+        },
+        {
+            title: "SC 3",
+            description: "Additional RS creative asset for campaign promotion.",
+            role: "Graphic design / social creative",
+            url: "/work/rs/designs/rs-sc-03.jpeg",
+            images: [{ image: "/work/rs/designs/rs-sc-03.jpeg", label: "SC 3" }],
+        },
+    ], brandPlatforms,
 });

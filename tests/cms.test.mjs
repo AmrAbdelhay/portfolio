@@ -122,9 +122,15 @@ test('RS legacy documents gain galleries without losing existing videos and resu
 });
 test('RS media round-trips carousels, campaign metrics and Arabic copy and rejects unsafe images',()=>{
  const c=structuredClone(defaultContent);
- c.rsDesigns=[{title:'Carousel',description:'',role:'Designer',images:[{image:'https://example.com/a.webp',label:'Slide 1'},{image:'/slide2.png',label:'Slide 2'}]}];
+ c.rsDesigns=[{title:'Carousel',description:'',role:'Designer',url:'/work/rs/designs/rs-de-01.jpeg',images:[{image:'https://example.com/a.webp',label:'Slide 1'},{image:'/slide2.png',label:'Slide 2'}]}];
  c.rsCampaigns=[{title:'Campaign',description:'',role:'Media buyer',objective:'Messages',period:'2026',metrics:[{value:'100',label:'Messages'}],images:[],note:'Reported results'}];
  c.rsContent=[{title:'Caption',description:'',role:'Writer',format:'Caption',text:'نص عربي\nسطر جديد',url:'',images:[]}];
  assert.deepEqual(contentSchema.parse(c),c);
  c.rsDesigns[0].images[0].image='javascript:alert(1)';assert.equal(contentSchema.safeParse(c).success,false);
+});
+
+test('RS design cards accept direct links to each creative asset',()=>{
+ const parsed = contentSchema.parse(defaultContent);
+ assert.equal(parsed.rsDesigns[0].url, '/work/rs/designs/rs-de-01.jpeg');
+ assert.equal(parsed.rsDesigns[0].images[0].image, '/work/rs/designs/rs-de-01.jpeg');
 });
