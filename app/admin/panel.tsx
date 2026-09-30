@@ -66,6 +66,51 @@ function Editor({ value, change, field, upload }: {
     return <div className="cms-fields">{Object.entries(value).map(([key, item]) => <div key={key}>{typeof item !== "string" && <h3>{labels[key] ?? key}</h3>}<Editor value={item} change={v => change({ ...value, [key]: v })} field={key} upload={upload} /></div>)}</div>;
 }
 
+function RSDesignEditor({ value, change, upload, busy }: {
+    value: PortfolioContent["rsDesigns"];
+    change: (v: PortfolioContent["rsDesigns"]) => void;
+    upload: (file: File) => Promise<string>;
+    busy: boolean;
+}) {
+    const updateItem = (index: number, patch: Partial<PortfolioContent["rsDesigns"][number]>) => {
+        change(value.map((item, i) => i === index ? { ...item, ...patch } : item));
+    };
+    const updatePrimaryImage = (index: number, image: string) => {
+        const current = value[index];
+        const nextImage = { ...((current?.images?.[0]) ?? { label: current?.title ?? "Design" }), image, label: current?.title || "Design" };
+        updateItem(index, { images: [nextImage] });
+    };
+    return (
+        <div className="cms-rs-design-list">
+            {value.map((item, index) => (
+                <div className="cms-rs-design-card" key={`${item.title || "design"}-${index}`}>
+                    <div className="cms-rs-design-top">
+                        <strong>{item.title || `تصميم ${index + 1}`}</strong>
+                        <div className="cms-rs-design-actions">
+                            <button type="button" disabled={busy || index === 0} onClick={() => { const next = [...value]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; change(next); }}>↑</button>
+                            <button type="button" disabled={busy || index === value.length - 1} onClick={() => { const next = [...value]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; change(next); }}>↓</button>
+                            <button type="button" disabled={busy} onClick={() => change(value.filter((_, i) => i !== index))}>حذف</button>
+                        </div>
+                    </div>
+                    <div className="cms-rs-design-grid">
+                        <label className="cms-field"><span>العنوان</span><input value={item.title} onChange={e => updateItem(index, { title: e.target.value })} /></label>
+                        <label className="cms-field"><span>الدور</span><input value={item.role} onChange={e => updateItem(index, { role: e.target.value })} /></label>
+                        <label className="cms-field cms-rs-full"><span>الوصف</span><textarea rows={3} value={item.description} onChange={e => updateItem(index, { description: e.target.value })} /></label>
+                        <label className="cms-field cms-rs-full"><span>رابط الصورة / الصفحة</span><input type="text" dir="ltr" value={item.url ?? ""} onChange={e => updateItem(index, { url: e.target.value })} /></label>
+                        <div className="cms-rs-full">
+                            <AssetEditor field="image" value={item.images?.[0]?.image ?? ""} change={newImage => updatePrimaryImage(index, newImage)} upload={upload} />
+                        </div>
+                    </div>
+                </div>
+            ))}
+            <button type="button" className="cms-add-brand" disabled={busy} onClick={() => {
+                const item = newItem("rsDesigns", value as unknown as Value[]) as unknown as PortfolioContent["rsDesigns"][number];
+                change([...value, item]);
+            }}>+ إضافة تصميم جديد</button>
+        </div>
+    );
+}
+
 function BrandPage({ slug, content, update, upload, busy, onRemove }: {
     slug: string;
     content: PortfolioContent;
@@ -91,7 +136,7 @@ function BrandPage({ slug, content, update, upload, busy, onRemove }: {
                 <h3>{labels.rsWorks}</h3>
                 <Editor field="rsWorks" value={content.rsWorks as unknown as Value} upload={upload} change={v => update("rsWorks", v as unknown as typeof content.rsWorks)} />
                 <h3>{labels.rsDesigns}</h3>
-                <Editor field="rsDesigns" value={content.rsDesigns as unknown as Value} upload={upload} change={v => update("rsDesigns", v as unknown as typeof content.rsDesigns)} />
+                <RSDesignEditor value={content.rsDesigns} change={v => update("rsDesigns", v)} upload={upload} busy={busy} />
                 <h3>{labels.rsCampaigns}</h3>
                 <Editor field="rsCampaigns" value={content.rsCampaigns as unknown as Value} upload={upload} change={v => update("rsCampaigns", v as unknown as typeof content.rsCampaigns)} />
                 <h3>{labels.rsContent}</h3>
