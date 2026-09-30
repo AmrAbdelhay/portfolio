@@ -170,3 +170,16 @@ test('old live RS documents gain new reels once and preserve intentional removal
  assert.equal(saved.rsWorks.length,4);
  assert.equal(saved.rsWorks.some(work=>work.id==='graduation'),false);
 });
+
+test('RS design update removes the known screenshot and adds four designs once',()=>{
+ const legacy=structuredClone(defaultContent);delete legacy.rsDesignsVersion;
+ legacy.rsDesigns=legacy.rsDesigns.slice(0,5);
+ legacy.rsDesigns.push({title:'SC 3',description:'',role:'',url:'/work/rs/designs/rs-sc-03.jpeg',images:[{image:'/work/rs/designs/rs-sc-03.jpeg',label:'SC 3'}]});
+ const migrated=mergePortfolioContent(legacy);
+ assert.equal(migrated.rsDesigns.length,9);
+ assert.equal(migrated.rsDesigns.some(work=>work.images.some(picture=>picture.image.includes('rs-sc-03'))),false);
+ assert.equal(mergePortfolioContent(migrated).rsDesigns.length,9);
+ migrated.rsDesigns=migrated.rsDesigns.slice(0,8);
+ assert.equal(mergePortfolioContent(migrated).rsDesigns.length,8);
+ assert.equal(migrated.rsWorks.length,5);
+});

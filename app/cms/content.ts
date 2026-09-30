@@ -2,6 +2,7 @@ import { z } from "zod";
 import { caseStudies, projects, services, experience, stack, aleemDesigns } from "../portfolio-data";
 import { details } from "./case-details";
 import { rsWorks } from "./rs-data";
+import { rsDesigns as newRSDesigns } from "./rs-designs";
 import { brandPlatforms } from "./social-data";
 const text = z.string().max(12000);
 const url = text.refine(v => v === "" || (/^\/(?!\/)/.test(v) && !v.includes("\\")) || /^https:\/\//.test(v), "Use an HTTPS link or a local /path");
@@ -19,6 +20,7 @@ export const contentSchema = z.object({
     stack: z.array(z.object({ name: text, items: z.array(text) })).max(50),
     aleemDesigns: z.array(z.object({ image: url, label: text })).max(200),
     nogaDesigns: z.array(designWork).max(200).default([]),
+    rsDesignsVersion: z.number().int().min(0).default(1),
     rsWorksVersion: z.number().int().min(0).default(2),
     details: z.record(z.string(), z.object({ headline: text, intro: text, chapters: z.array(chapter) })),
     rsWorks: z.array(z.object({ id: text, title: text, description: text, role: text, badge: z.enum(["Organic", "Organic + Paid", "Results provided", ""]), views: text, likes: text, comments: text, shares: text, url, note: text, video: url, poster: url })).max(200),
@@ -92,13 +94,7 @@ export const defaultContent: PortfolioContent = contentSchema.parse({
             url: "/work/rs/designs/rs-de-05.jpeg",
             images: [{ image: "/work/rs/designs/rs-de-05.jpeg", label: "RS DE 5" }],
         },
-        {
-            title: "SC 3",
-            description: "Additional RS creative asset for campaign promotion.",
-            role: "Graphic design / social creative",
-            url: "/work/rs/designs/rs-sc-03.jpeg",
-            images: [{ image: "/work/rs/designs/rs-sc-03.jpeg", label: "SC 3" }],
-        },
+        ...newRSDesigns,
     ], brandPlatforms,
 });
 
@@ -111,13 +107,18 @@ export function mergePortfolioContent(document: unknown): PortfolioContent {
     const rsWorks = liveVersion < defaultContent.rsWorksVersion
         ? [...liveWorks, ...defaultContent.rsWorks.filter(item => !liveWorks.some(work => work.id === item.id))]
         : liveWorks;
+    const designVersion = typeof live.rsDesignsVersion === "number" ? live.rsDesignsVersion : 0;
+    const liveDesigns = Array.isArray(live.rsDesigns) ? live.rsDesigns : defaultContent.rsDesigns;
+    const cleanDesigns = liveDesigns.map(work => ({ ...work, images: work.images.filter(picture => !/\/(?:rs-sc-03|SC%203|SC 3)\.jpeg(?:[?#]|$)/i.test(picture.image)) })).filter(work => work.images.length > 0);
+    const rsDesigns = designVersion < 1 ? [...cleanDesigns, ...defaultContent.rsDesigns.filter(work => !cleanDesigns.some(existing => existing.images.some(picture => work.images.some(candidate => candidate.image === picture.image))))] : cleanDesigns;
     return contentSchema.parse({
         ...defaultContent,
         ...live,
+        rsDesignsVersion: Math.max(designVersion, 1),
         rsWorksVersion: Math.max(liveVersion, defaultContent.rsWorksVersion),
         rsWorks,
         nogaDesigns: Array.isArray(live.nogaDesigns) ? live.nogaDesigns : defaultContent.nogaDesigns,
-        rsDesigns: Array.isArray(live.rsDesigns) && live.rsDesigns.length > 0 ? live.rsDesigns : defaultContent.rsDesigns,
+        rsDesigns,
         rsCampaigns: Array.isArray(live.rsCampaigns) && live.rsCampaigns.length > 0 ? live.rsCampaigns : defaultContent.rsCampaigns,
         rsContent: Array.isArray(live.rsContent) && live.rsContent.length > 0 ? live.rsContent : defaultContent.rsContent,
     });
