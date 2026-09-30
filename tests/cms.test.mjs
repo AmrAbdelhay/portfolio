@@ -2,7 +2,7 @@ import { registerHooks } from 'node:module';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 registerHooks({resolve(specifier,context,next){try{return next(specifier,context)}catch(error){if(specifier.startsWith('.'))return next(specifier+'.ts',context);throw error;}}});
-const {contentSchema,defaultContent}=await import('../app/cms/content.ts');
+const {contentSchema,defaultContent,mergePortfolioContent}=await import('../app/cms/content.ts');
 const {newItem,updateSection}=await import('../app/cms/editing.ts');
 const {GET,POST}=await import('../app/api/admin/content/route.ts');
 const {POST:upload}=await import('../app/api/admin/upload/route.ts');
@@ -158,4 +158,15 @@ test('RS reels retain optional result screenshots and new video entries validate
  assert.equal(parsed.rsWorks.find(work=>work.id==='graduation').badge,'');
  const legacy=structuredClone(defaultContent);delete legacy.rsWorks[0].resultsImage;
  assert.equal(contentSchema.safeParse(legacy).success,true);
+});
+
+test('old live RS documents gain new reels once and preserve intentional removals',()=>{
+ const legacy=structuredClone(defaultContent);legacy.rsWorks=legacy.rsWorks.slice(0,2);delete legacy.rsWorksVersion;
+ const migrated=mergePortfolioContent(legacy);
+ assert.equal(migrated.rsWorks.length,5);
+ assert.equal(migrated.rsWorksVersion,2);
+ migrated.rsWorks=migrated.rsWorks.filter(work=>work.id!=='graduation');
+ const saved=mergePortfolioContent(migrated);
+ assert.equal(saved.rsWorks.length,4);
+ assert.equal(saved.rsWorks.some(work=>work.id==='graduation'),false);
 });

@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { contentSchema, defaultContent } from "./content";
+import { defaultContent, mergePortfolioContent } from "./content";
 export function database(token?: string) {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -16,16 +16,7 @@ export async function publishedContent() {
             throw error;
         if (!data)
             return defaultContent;
-        const live = data.document ?? {};
-        const merged = {
-            ...defaultContent,
-            ...live,
-            nogaDesigns: Array.isArray(live.nogaDesigns) ? live.nogaDesigns : defaultContent.nogaDesigns,
-            rsDesigns: Array.isArray(live.rsDesigns) && live.rsDesigns.length > 0 ? live.rsDesigns : defaultContent.rsDesigns,
-            rsCampaigns: Array.isArray(live.rsCampaigns) && live.rsCampaigns.length > 0 ? live.rsCampaigns : defaultContent.rsCampaigns,
-            rsContent: Array.isArray(live.rsContent) && live.rsContent.length > 0 ? live.rsContent : defaultContent.rsContent,
-        };
-        return contentSchema.parse(merged);
+        return mergePortfolioContent(data.document ?? {});
     }
     catch {
         console.error("Published portfolio content unavailable; using bundled content.");

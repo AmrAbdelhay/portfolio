@@ -19,6 +19,7 @@ export const contentSchema = z.object({
     stack: z.array(z.object({ name: text, items: z.array(text) })).max(50),
     aleemDesigns: z.array(z.object({ image: url, label: text })).max(200),
     nogaDesigns: z.array(designWork).max(200).default([]),
+    rsWorksVersion: z.number().int().min(0).default(2),
     details: z.record(z.string(), z.object({ headline: text, intro: text, chapters: z.array(chapter) })),
     rsWorks: z.array(z.object({ id: text, title: text, description: text, role: text, badge: z.enum(["Organic", "Organic + Paid", "Results provided", ""]), views: text, likes: text, comments: text, shares: text, url, note: text, video: url, poster: url, resultsImage: url.default("") })).max(200),
     rsDesigns: z.array(designWork).max(200).default([]),
@@ -100,3 +101,24 @@ export const defaultContent: PortfolioContent = contentSchema.parse({
         },
     ], brandPlatforms,
 });
+
+export function mergePortfolioContent(document: unknown): PortfolioContent {
+    const live = document && typeof document === "object" && !Array.isArray(document)
+        ? document as Partial<PortfolioContent>
+        : {};
+    const liveWorks = Array.isArray(live.rsWorks) ? live.rsWorks : [];
+    const liveVersion = typeof live.rsWorksVersion === "number" ? live.rsWorksVersion : 0;
+    const rsWorks = liveVersion < defaultContent.rsWorksVersion
+        ? [...liveWorks, ...defaultContent.rsWorks.filter(item => !liveWorks.some(work => work.id === item.id))]
+        : liveWorks;
+    return contentSchema.parse({
+        ...defaultContent,
+        ...live,
+        rsWorksVersion: Math.max(liveVersion, defaultContent.rsWorksVersion),
+        rsWorks,
+        nogaDesigns: Array.isArray(live.nogaDesigns) ? live.nogaDesigns : defaultContent.nogaDesigns,
+        rsDesigns: Array.isArray(live.rsDesigns) && live.rsDesigns.length > 0 ? live.rsDesigns : defaultContent.rsDesigns,
+        rsCampaigns: Array.isArray(live.rsCampaigns) && live.rsCampaigns.length > 0 ? live.rsCampaigns : defaultContent.rsCampaigns,
+        rsContent: Array.isArray(live.rsContent) && live.rsContent.length > 0 ? live.rsContent : defaultContent.rsContent,
+    });
+}

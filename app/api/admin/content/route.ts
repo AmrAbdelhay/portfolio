@@ -1,5 +1,5 @@
 import { requireAdmin } from "../../../cms/server";
-import { contentSchema, defaultContent } from "../../../cms/content";
+import { contentSchema, defaultContent, mergePortfolioContent } from "../../../cms/content";
 export const dynamic = "force-dynamic";
 function failure(error: unknown) {
     const message = error instanceof Error ? error.message : "Request failed";
@@ -12,7 +12,7 @@ export async function GET(request: Request) {
         const { data, error } = await db.from("portfolio_content").select("document,revision").eq("id", "draft").maybeSingle();
         if (error)
             throw error;
-        return Response.json({ document: data?.document ?? defaultContent, revision: data?.revision ?? 0 }, { headers: { "Cache-Control": "no-store" } });
+        return Response.json({ document: mergePortfolioContent(data?.document ?? defaultContent), revision: data?.revision ?? 0 }, { headers: { "Cache-Control": "no-store" } });
     }
     catch (error) {
         return failure(error);
