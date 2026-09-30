@@ -10,7 +10,7 @@ test('preserves current portfolio and distinguishes paid from organic',()=>{
  assert.equal(contentSchema.safeParse(defaultContent).success,true);
  assert.equal(defaultContent.caseStudies.length,3);
  assert.equal(defaultContent.aleemDesigns.length,6);
- assert.deepEqual(defaultContent.rsWorks.map(x=>x.badge),['Organic + Paid','Organic','Results provided','Results provided','']);
+ assert.deepEqual(defaultContent.rsWorks.map(x=>x.badge),['Organic + Paid','Organic','','','']);
 });
 test('rejects executable links, duplicate slugs and missing stories',()=>{
  for(const url of ['javascript:alert(1)','//evil.test','/\\evil.test','data:text/html,hello']) {
@@ -147,12 +147,12 @@ test('Noga designs can be added with uploaded images and older content defaults 
  assert.equal(contentSchema.safeParse(parsed).success,false);
 });
 
-test('RS reels retain optional result screenshots and new video entries validate',()=>{
+test('RS reels expose numeric results without screenshot-only fields',()=>{
  const parsed=contentSchema.parse(defaultContent);
  assert.equal(parsed.rsWorks.length,5);
- assert.equal(parsed.rsWorks.find(work=>work.id==='financial-accountant').resultsImage,'/work/rs/financial-accountant-results.png');
+ assert.equal(Object.hasOwn(parsed.rsWorks.find(work=>work.id==='financial-accountant'),'resultsImage'),false);
  const secondReel=parsed.rsWorks.find(work=>work.id==='financial-accountant-2');
- assert.equal(secondReel.resultsImage,'/work/rs/financial-accountant-2-results.jpeg');
+ assert.equal(Object.hasOwn(secondReel,'resultsImage'),false);
  assert.deepEqual([secondReel.views,secondReel.likes,secondReel.comments,secondReel.shares],['1M','2.9K','227','150']);
  assert.equal(secondReel.url,'https://www.facebook.com/reel/1817130995470717');
  assert.equal(parsed.rsWorks.find(work=>work.id==='graduation').badge,'');

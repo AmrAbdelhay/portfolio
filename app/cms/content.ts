@@ -21,7 +21,7 @@ export const contentSchema = z.object({
     nogaDesigns: z.array(designWork).max(200).default([]),
     rsWorksVersion: z.number().int().min(0).default(2),
     details: z.record(z.string(), z.object({ headline: text, intro: text, chapters: z.array(chapter) })),
-    rsWorks: z.array(z.object({ id: text, title: text, description: text, role: text, badge: z.enum(["Organic", "Organic + Paid", "Results provided", ""]), views: text, likes: text, comments: text, shares: text, url, note: text, video: url, poster: url, resultsImage: url.default("") })).max(200),
+    rsWorks: z.array(z.object({ id: text, title: text, description: text, role: text, badge: z.enum(["Organic", "Organic + Paid", "Results provided", ""]), views: text, likes: text, comments: text, shares: text, url, note: text, video: url, poster: url })).max(200),
     rsDesigns: z.array(designWork).max(200).default([]),
     rsCampaigns: z.array(z.object({ ...work, objective: text, period: text, metrics: z.array(metric), images, note: text })).max(200).default([]),
     rsContent: z.array(z.object({ ...work, format: text, text, url, images })).max(200).default([]),
