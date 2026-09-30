@@ -1,13 +1,15 @@
 export const details = {
     noga: {
         headline: "From first idea to every customer order.",
-        intro: "Noga Home is the full story of a brand I built and operated myself. My work spans what customers see, how they discover the products, the conversations that turn interest into orders, and the website that brings it together.",
+        intro: "I built Noga Home from the first idea and logo to its social pages, marketing, pricing, profit margins, customer service and direct sales. I manage the orders and pass them to a production partner, who makes the products and delivers them to customers or the shipping company. I am also developing the brand’s e-commerce website; it is still a work in progress.",
         chapters: [
-            { number: "01", title: "Brand & product creative", text: "Developed the brand's visual direction, created product designs and campaign assets, and produced content for the social pages.", evidence: "Brand identity · Product imagery · Social posts" },
+            { number: "01", title: "Brand & product creative", text: "Created the brand concept, logo and visual identity, set up its social pages, and wrote and designed the product and campaign content.", evidence: "Brand identity · Product imagery · Social posts" },
             { number: "02", title: "Content & paid growth", text: "Planned offers and creative, ran Meta campaigns, tested content, and followed the results from advertising to customer contact.", evidence: "Campaign screenshots · Creative tests · Post performance" },
             { number: "03", title: "Sales & customer operations", text: "Spoke directly with customers, answered questions, sold through chat, followed orders, and managed the customer experience beyond the ad click.", evidence: "Sales process · Conversations · Delivered orders" },
-            { number: "04", title: "E-commerce website", text: "Built the online storefront and the digital shopping experience for Noga Home, alongside the day-to-day brand operations.", evidence: "Store screens · Customer journey · Development work" },
-            { number: "05", title: "Video & production", text: "Product photography, edits, short videos, and social-first creative belong alongside the campaigns that used them.", evidence: "Product shoots · Reels · Video edits" },
+            { number: "04", title: "E-commerce website", text: "Designed and developed the Noga Home online storefront and its digital shopping experience. The website is still under development alongside my day-to-day running of the brand.", evidence: "Store screens · Customer journey · Development work" },
+            { number: "05", title: "Photography & video", text: "Created product photography, edits, short videos and social creative for the brand's campaigns.", evidence: "Product shoots · Reels · Video edits" },
+            { number: "06", title: "Pricing & profit margins", text: "Set product prices, calculate costs and profit margins, and plan offers while managing customer conversations and closing sales.", evidence: "Costing · Pricing · Profit margins · Direct sales" },
+            { number: "07", title: "Production & delivery coordination", text: "I send confirmed orders to a production partner. She makes the products and delivers them to customers or the shipping company. I manage the brand, pricing, marketing, customer service and sales.", evidence: "Order handoff · Production partner · Customer or courier delivery" },
         ],
     },
     rs: {

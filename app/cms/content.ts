@@ -42,6 +42,11 @@ export const contentSchema = z.object({
         if (post) { design.url = post; design.role = "Content writing & graphic design"; }
     }
     for (const brand of value.caseStudies) {
+        if (brand.template === "noga") {
+            if (brand.summary.startsWith("Built and ran the brand end to end:")) brand.summary = caseStudies.find(study => study.slug === "noga")!.summary;
+            const story = value.details[brand.slug];
+            if (story?.intro.startsWith("Noga Home is the full story of a brand I built and operated myself.")) value.details[brand.slug] = structuredClone(details.noga);
+        }
         if (brand.template !== "rs") continue;
         if (brand.role === "Sales → Operations → Marketing") brand.role = "Digital Marketing · Content · Design · Paid Media";
         if (brand.summary.startsWith("Started in sales, generating approximately EGP 200K")) brand.summary = "Created content, social designs and video for RS, managed social media, and worked on paid campaigns and performance reporting.";
@@ -53,9 +58,15 @@ export const contentSchema = z.object({
             story.chapters = [...story.chapters.filter(c => c.title.startsWith("Digital marketing")), ...story.chapters.filter(c => !c.title.startsWith("Digital marketing"))].map((c, i) => ({ ...c, number: String(i + 1).padStart(2, "0") }));
         }
     }
-    for (const project of value.projects) if (project.title === "RS: Sales to Marketing") {
+    for (const project of value.projects) {
+        if (project.title === "Noga Home Store") {
+            project.link = "https://noga-home-store.amr743366.workers.dev/";
+            project.description = "E-commerce storefront and admin workflow designed and developed by me. Work in progress.";
+        }
+        if (project.title === "RS: Sales to Marketing") {
         project.title = "RS: Content, Creative & Campaigns";
         project.description = "Social designs, video production, written content and paid campaign results.";
+        }
     }
     for (const item of value.experience) if (item.company === "RS" && item.description.startsWith("Approximately EGP 200K in sales across three months")) item.description = "Early experience in customer sales and operations, including Odoo ERP data entry and reporting, before moving into digital marketing.";
     return value;
