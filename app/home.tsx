@@ -1,14 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import type { PortfolioContent } from "./cms/content";
 
 const filters = ["All", "Brand", "Paid Media", "Content", "Video", "Development"];
 
 export default function Home({ content }: { content: PortfolioContent }) {
   const { caseStudies, experience, projects, services, stack, profile } = content;
-  const aleemBrand = caseStudies.find(study => study.template === "aleem");
   const [activeFilter, setActiveFilter] = useState("All");
   const visibleProjects = useMemo(
     () => projects.filter((project) => activeFilter === "All" || project.category === activeFilter),
@@ -19,7 +17,7 @@ export default function Home({ content }: { content: PortfolioContent }) {
     <main>
       <nav className="nav shell" aria-label="Primary navigation">
         <a className="brand-mark" href="#top" aria-label="Amr Ahmed Abdelhay, home">AA</a>
-        <div className="nav-links"><a href="#work">Work</a>{aleemBrand && <Link href={`/work/${aleemBrand.slug}#aleem-gallery`}>{aleemBrand.name} designs</Link>}<a href="#experience">Experience</a><a href="#about">About</a></div>
+        <div className="nav-links"><a href="#work">Work</a><a href="#experience">Experience</a><a href="#about">About</a></div>
         <a className="nav-cta" href={profile.github} target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
       </nav>
 
