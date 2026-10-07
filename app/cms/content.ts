@@ -4,13 +4,14 @@ import { details } from "./case-details";
 import { rsWorks } from "./rs-data";
 import { rsDesigns as newRSDesigns, rsDesignPosts } from "./rs-designs";
 import { brandPlatforms } from "./social-data";
+import { nogaDesigns } from "./noga-designs";
 const text = z.string().max(12000);
 const url = text.refine(v => v === "" || (/^\/(?!\/)/.test(v) && !v.includes("\\")) || /^https:\/\//.test(v), "Use an HTTPS link or a local /path");
 const metric = z.object({ value: text, label: text });
 const chapter = z.object({ number: text, title: text, text, evidence: text });
 const images = z.array(z.object({ image: url, label: text })).max(100);
 const work = { title: text, description: text, role: text };
-const designWork = z.object({ ...work, url: url.default(""), images });
+const designWork = z.object({ ...work, url: url.default(""), designTool: text.optional(), reach: z.enum(["", "Ad", "Organic"]).optional(), images });
 export const contentSchema = z.object({
     profile: z.object({ name: text.min(1), location: text, title: text, headline: text, headlineSecond: text, intro: text, portrait: url, about: text, github: url }),
     services: z.array(text).max(50),
@@ -20,6 +21,7 @@ export const contentSchema = z.object({
     stack: z.array(z.object({ name: text, items: z.array(text) })).max(50),
     aleemDesigns: z.array(z.object({ image: url, label: text })).max(200),
     nogaDesigns: z.array(designWork).max(200).default([]),
+    nogaDesignsVersion: z.number().int().min(0).default(1),
     rsDesignsVersion: z.number().int().min(0).default(1),
     rsWorksVersion: z.number().int().min(0).default(2),
     details: z.record(z.string(), z.object({ headline: text, intro: text, chapters: z.array(chapter) })),
@@ -81,7 +83,7 @@ export const contentSchema = z.object({
 export type PortfolioContent = z.infer<typeof contentSchema>;
 export const defaultContent: PortfolioContent = contentSchema.parse({
     profile: { name: "Amr Ahmed Abdelhay", location: "Cairo, Egypt · Open to opportunities", title: "Digital Marketing & Brand Growth Specialist", headline: "I build brands", headlineSecond: "from the ground up.", intro: "connecting strategy, content, paid media, design, sales, and digital execution.", portrait: "/amr-ahmed-abdelhay.jpeg", github: "https://github.com/AmrAbdelhay", about: "With a 2020 degree in Management Information Systems, I bring a business-first lens to creative work. I moved from sales and Odoo-based operations into end-to-end marketing—then expanded into brand design, short-form video, AI-assisted production, Flutter, and e-commerce development." },
-    caseStudies, projects, services, experience, stack, aleemDesigns, details, rsWorks, rsDesigns: [
+    caseStudies, projects, services, experience, stack, aleemDesigns, details, rsWorks, nogaDesigns, rsDesigns: [
         {
             title: "RS DE1",
             description: "Social media design concept for RS brand storytelling.",
@@ -134,7 +136,8 @@ export function mergePortfolioContent(document: unknown): PortfolioContent {
         rsDesignsVersion: Math.max(designVersion, 1),
         rsWorksVersion: Math.max(liveVersion, defaultContent.rsWorksVersion),
         rsWorks,
-        nogaDesigns: Array.isArray(live.nogaDesigns) ? live.nogaDesigns : defaultContent.nogaDesigns,
+        nogaDesignsVersion: Math.max(live.nogaDesignsVersion ?? 0, 1),
+        nogaDesigns: (live.nogaDesignsVersion ?? 0) < 1 ? [...(live.nogaDesigns ?? []), ...defaultContent.nogaDesigns.filter(work => !(live.nogaDesigns ?? []).some(existing => existing.images.some(picture => work.images.some(candidate => candidate.image === picture.image))))] : (live.nogaDesigns ?? defaultContent.nogaDesigns),
         rsDesigns,
         rsCampaigns: Array.isArray(live.rsCampaigns) && live.rsCampaigns.length > 0 ? live.rsCampaigns : defaultContent.rsCampaigns,
         rsContent: Array.isArray(live.rsContent) && live.rsContent.length > 0 ? live.rsContent : defaultContent.rsContent,

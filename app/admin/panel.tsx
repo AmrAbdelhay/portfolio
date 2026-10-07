@@ -97,6 +97,8 @@ function DesignEditor({ value, change, upload, busy, field, brand }: {
                     <div className="cms-rs-design-grid">
                         <label className="cms-field"><span>العنوان</span><input value={item.title} onChange={e => updateItem(index, { title: e.target.value })} /></label>
                         <label className="cms-field"><span>الدور</span><input value={item.role} onChange={e => updateItem(index, { role: e.target.value })} /></label>
+                        <label className="cms-field"><span>أداة التصميم — تظهر تحت الصورة</span><select value={item.designTool ?? ""} onChange={e => updateItem(index, { designTool: e.target.value })}><option value="">غير محدد</option><option value="Photoshop">Photoshop</option><option value="AI">AI — ذكاء اصطناعي</option><option value="Photoshop + AI">Photoshop + AI</option><option value="Illustrator">Illustrator</option><option value="Canva">Canva</option></select></label>
+                        <label className="cms-field"><span>نوع النشر — يظهر فوق الصورة</span><select value={item.reach ?? ""} onChange={e => updateItem(index, { reach: e.target.value as "" | "Ad" | "Organic" })}><option value="">غير محدد</option><option value="Ad">Ad</option><option value="Organic">Organic</option></select></label>
                         <label className="cms-field cms-rs-full"><span>الوصف</span><textarea rows={3} value={item.description} onChange={e => updateItem(index, { description: e.target.value })} /></label>
                         <label className="cms-field cms-rs-full"><span>رابط الصورة / الصفحة</span><input type="text" dir="ltr" value={item.url ?? ""} onChange={e => updateItem(index, { url: e.target.value })} /></label>
                         <div className="cms-rs-full">

@@ -18,7 +18,7 @@ function Pictures({ images, title }: { images: Picture[]; title: string }) {
     </dialog></>;
 }
 export function DesignGallery({ brand, designs }: { brand: string; designs: PortfolioContent["rsDesigns"] }) {
-  const pictures = designs.flatMap(work => work.images.map(image => ({ image: image.image, label: image.label || work.title, url: work.url || image.image }))).filter(image => image.image);
+  const pictures = designs.flatMap(work => work.images.map(image => ({ image: image.image, label: image.label || work.title, url: work.url || image.image, designTool: work.designTool, reach: work.reach }))).filter(image => image.image);
   const rail = useRef<HTMLDivElement>(null);
   const held = useRef(false);
   const pauseUntil = useRef(0);
@@ -61,8 +61,8 @@ export function DesignGallery({ brand, designs }: { brand: string; designs: Port
     <div className="creative-gallery-window" ref={rail} tabIndex={0} aria-label={`${brand} design gallery`} onMouseEnter={() => { held.current = true; }} onMouseLeave={() => { held.current = false; }} onFocusCapture={() => { held.current = true; }} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) held.current = false; }} onPointerDown={event => { if (event.pointerType !== "mouse" || event.button !== 0) return; drag.current = { x: event.clientX, left: event.currentTarget.scrollLeft, moved: false }; suppressClick.current = false; }} onPointerMove={event => { const start = drag.current; if (!start) return; if (Math.abs(event.clientX - start.x) > 5) { start.moved = true; suppressClick.current = true; event.currentTarget.setPointerCapture(event.pointerId); event.currentTarget.scrollLeft = start.left - (event.clientX - start.x); } }} onPointerUp={() => { drag.current = null; pauseUntil.current = performance.now() + 2500; }} onPointerCancel={() => { drag.current = null; }} onClickCapture={event => { if (suppressClick.current) { event.preventDefault(); event.stopPropagation(); suppressClick.current = false; } }} onDragStart={event => event.preventDefault()}>
       <div className="creative-gallery-track">
         {pictures.map((picture, index) => {
-          const reach = brand === "RS" ? rsDesignReach[picture.url] : undefined;
-          return <a className="creative-design" href={picture.url} target="_blank" rel="noreferrer" aria-label={`View ${brand} design: ${picture.label}${reach ? ` (${reach})` : ""}`} key={`${picture.image}-${index}`}><img src={picture.image} alt={picture.label} loading="lazy" draggable={false} />{reach && <span className={`creative-reach ${reach === "Organic" ? "organic" : ""}`}>{reach}</span>}<span aria-hidden="true">↗</span></a>;
+          const reach = picture.reach || (brand === "RS" ? rsDesignReach[picture.url] : undefined);
+          return <div className="creative-design-item" key={`${picture.image}-${index}`}><a className="creative-design" href={picture.url} target="_blank" rel="noreferrer" aria-label={`View ${brand} design: ${picture.label}${reach ? ` (${reach})` : ""}`}><img src={picture.image} alt={picture.label} loading="lazy" draggable={false} />{reach && <span className={`creative-reach ${reach === "Organic" ? "organic" : ""}`}>{reach}</span>}<span aria-hidden="true">↗</span></a>{picture.designTool && <p className="creative-design-tool">Designed in {picture.designTool}</p>}</div>;
         })}
       </div>
     </div>

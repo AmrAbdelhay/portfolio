@@ -470,6 +470,8 @@ button {
   background: #eee9df;
 }
 .creative-design img { width: 100%; height: 100%; object-fit: contain; }
+.creative-design-item { flex: 0 0 auto; }
+.creative-design-tool { margin: 10px 4px 0; font-size: 12px; font-weight: 500; color: var(--muted, #68716b); }
 .creative-design span {
   position: absolute;
   right: 12px;
