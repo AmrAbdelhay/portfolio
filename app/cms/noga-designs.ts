@@ -4,7 +4,7 @@ export const nogaDesigns = [
     "description": "Noga Home navy floral pillow creative styled with beige bedding and wood, with the message: أوضتك هادية؟ الكحلي يكمّلها.",
     "url": "https://www.facebook.com/share/p/18XSQtWZkG/",
     "role": "",
-    "designTool": "",
+    "designTool": "AI",
     "reach": "",
     "images": [
       {
@@ -18,7 +18,7 @@ export const nogaDesigns = [
     "description": "Noga Home blue and yellow geometric bedding flowing out of a phone screen, with the message: عجبتك عالشاشة؟ خلّيها على سريرك.",
     "url": "https://www.facebook.com/share/p/17oYaLrxfP/",
     "role": "",
-    "designTool": "",
+    "designTool": "AI",
     "reach": "",
     "images": [
       {
@@ -32,7 +32,7 @@ export const nogaDesigns = [
     "description": "Noga Home green floral bedding creative with the message: غيّري الملاية غيّري مود الأوضة.",
     "url": "https://www.facebook.com/share/p/14mXDC6fZar/",
     "role": "",
-    "designTool": "",
+    "designTool": "AI",
     "reach": "",
     "images": [
       {
@@ -46,7 +46,7 @@ export const nogaDesigns = [
     "description": "Noga Home bedding creative showcasing three floral patterns with the message: اختاري مود أوضتك.",
     "url": "https://www.facebook.com/share/p/19kaoZFDG1/",
     "role": "",
-    "designTool": "",
+    "designTool": "AI",
     "reach": "",
     "images": [
       {

@@ -31,6 +31,16 @@ export const contentSchema = z.object({
     rsContent: z.array(z.object({ ...work, format: text, text, url, images })).max(200).default([]),
     brandPlatforms: z.record(z.string(), z.array(z.object({ platform: z.enum(["Facebook", "Instagram"]), url }))),
 }).transform(value => {
+    const newNogaImages = new Set([
+        "/work/noga/bedroom-mood-de2.jpg",
+        "/work/noga/change-bedroom-mood.png",
+        "/work/noga/screen-to-bed-de3.jpg",
+        "/work/noga/navy-floral-de10.jpg",
+    ]);
+    for (const design of value.nogaDesigns) {
+        if (!design.designTool && design.images.some(picture => newNogaImages.has(picture.image)))
+            design.designTool = "AI";
+    }
     const financialAccountant = value.rsWorks.find(work => work.id === "financial-accountant");
     if (financialAccountant) {
         financialAccountant.likes ||= "148";
