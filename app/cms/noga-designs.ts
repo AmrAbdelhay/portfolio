@@ -1,5 +1,61 @@
 export const nogaDesigns = [
   {
+    "title": "Navy completes your bedroom",
+    "description": "Noga Home navy floral pillow creative styled with beige bedding and wood, with the message: أوضتك هادية؟ الكحلي يكمّلها.",
+    "url": "https://www.facebook.com/share/p/18XSQtWZkG/",
+    "role": "",
+    "designTool": "",
+    "reach": "",
+    "images": [
+      {
+        "image": "/work/noga/navy-floral-de10.jpg",
+        "label": "Noga Home navy floral pillow — أوضتك هادية؟ الكحلي يكمّلها"
+      }
+    ]
+  },
+  {
+    "title": "From your screen to your bed",
+    "description": "Noga Home blue and yellow geometric bedding flowing out of a phone screen, with the message: عجبتك عالشاشة؟ خلّيها على سريرك.",
+    "url": "https://www.facebook.com/share/p/17oYaLrxfP/",
+    "role": "",
+    "designTool": "",
+    "reach": "",
+    "images": [
+      {
+        "image": "/work/noga/screen-to-bed-de3.jpg",
+        "label": "Noga Home geometric bedding — عجبتك عالشاشة؟ خلّيها على سريرك"
+      }
+    ]
+  },
+  {
+    "title": "Change your sheets, change your bedroom mood",
+    "description": "Noga Home green floral bedding creative with the message: غيّري الملاية غيّري مود الأوضة.",
+    "url": "https://www.facebook.com/share/p/14mXDC6fZar/",
+    "role": "",
+    "designTool": "",
+    "reach": "",
+    "images": [
+      {
+        "image": "/work/noga/change-bedroom-mood.png",
+        "label": "Noga Home green floral bedding — غيّري الملاية غيّري مود الأوضة"
+      }
+    ]
+  },
+  {
+    "title": "Choose your bedroom mood",
+    "description": "Noga Home bedding creative showcasing three floral patterns with the message: اختاري مود أوضتك.",
+    "url": "https://www.facebook.com/share/p/19kaoZFDG1/",
+    "role": "",
+    "designTool": "",
+    "reach": "",
+    "images": [
+      {
+        "image": "/work/noga/bedroom-mood-de2.jpg",
+        "label": "Noga Home floral bedding — اختاري مود أوضتك"
+      }
+    ]
+  },
+  {
     "url": "",
     "images": [
       {
