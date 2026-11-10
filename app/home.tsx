@@ -7,6 +7,7 @@ const filters = ["All", "Brand", "Paid Media", "Content", "Video", "Development"
 
 export default function Home({ content }: { content: PortfolioContent }) {
   const { caseStudies, experience, projects, services, stack, profile } = content;
+  const nogaMetrics = caseStudies.find(study => study.slug === "noga")?.metrics ?? [];
   const [activeFilter, setActiveFilter] = useState("All");
   const visibleProjects = useMemo(
     () => projects.filter((project) => activeFilter === "All" || project.category === activeFilter),
@@ -36,10 +37,10 @@ export default function Home({ content }: { content: PortfolioContent }) {
       <section className="impact shell" aria-label="Selected performance results">
         <div className="section-label"><span>01</span> Measured impact</div>
         <div className="stat-grid">
-          <article><strong>3.2K+</strong><span>Messaging contacts</span></article><article><strong>7.6×</strong><span>Estimated ROAS</span></article>
-          <article><strong>96.7%</strong><span>Delivery rate</span></article><article><strong>EGP 112K</strong><span>Delivered revenue</span></article>
+          {nogaMetrics.map(metric => <article key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></article>)}
+          <article><strong>96.7%</strong><span>Delivery rate</span></article>
         </div>
-        <p className="data-note">Noga Home · Approximate commercial results based on Meta campaign exports and delivered-order records.</p>
+        <p className="data-note">Noga Home · Commercial results reported by the brand owner.</p>
       </section>
 
       <div className="service-rail" aria-label="Services"><div className="service-track">{[...services, ...services].map((service, index) => <span key={`${service}-${index}`}>{service}<b>✦</b></span>)}</div></div>

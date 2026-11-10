@@ -155,9 +155,25 @@ export function mergePortfolioContent(document: unknown): PortfolioContent {
             return { ...design, url: nogaGreenBeddingPost };
         return design;
     }) : mergedNogaDesigns;
+    const legacyNogaMetrics = {
+        contacts: { value: "5,760", label: "Messaging contacts (campaign sum)" },
+        "est. ROAS": { value: "10×", label: "Estimated ROAS" },
+        revenue: { value: "EGP 250K", label: "Sales revenue" },
+    };
+    const caseStudies = (live.caseStudies ?? defaultContent.caseStudies).map(study => {
+        if (study.slug !== "noga" || !study.metrics)
+            return study;
+        return { ...study, metrics: study.metrics.map(metric => {
+            if ((metric.label === "contacts" || metric.label === "Messaging contacts") && metric.value === "3.2K+") return legacyNogaMetrics.contacts;
+            if (metric.label === "est. ROAS" && metric.value === "7.6×") return legacyNogaMetrics["est. ROAS"];
+            if (metric.label === "revenue" && metric.value === "EGP 112K") return legacyNogaMetrics.revenue;
+            return metric;
+        }) };
+    });
     return contentSchema.parse({
         ...defaultContent,
         ...live,
+        caseStudies,
         rsDesignsVersion: Math.max(designVersion, 1),
         rsWorksVersion: Math.max(liveVersion, defaultContent.rsWorksVersion),
         rsWorks,
