@@ -35,6 +35,16 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
     <nav className="nav shell" aria-label="Case study navigation"><Link className="brand-mark" href="/" aria-label="Portfolio home">AA</Link><Link className="detail-back" href="/#work">← All case studies</Link></nav>
     <header className="detail-hero shell"><div className="detail-overline">CASE STUDY / {study.market} / {study.period}</div><div className="detail-hero-row"><div><h1>{study.name}<span>{detail.headline}</span></h1><p>{detail.intro}</p><BrandSocials slug={slug} name={study.name} platforms={brandPlatforms} /></div><img src={study.image} alt={`${study.name} logo`} /></div><div className="detail-tags">{study.tags.map(tag => <span key={tag}>{tag}</span>)}</div></header>
     {study.template !== "rs" && !!study.metrics.length && <section className="detail-metrics shell" aria-label="Selected results">{study.metrics.map(metric => <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}{study.template === "noga" && <p>Approximate commercial results based on campaign exports and delivered-order records. Estimated ROAS.</p>}</section>}
+    {study.template === "noga" && <section className="noga-messaging shell" id="noga-messaging" aria-labelledby="noga-messaging-title">
+      <span className="creative-gallery-eyebrow">META ADS · PAID MEDIA</span>
+      <h2 id="noga-messaging-title">Messaging campaign results</h2>
+      <div className="detail-metrics">
+        <div><strong>4,623</strong><span>Messaging conversations started</span></div>
+        <div><strong>EGP 3.87</strong><span>Average cost per conversation started</span></div>
+        <div><strong>EGP 17,871.48</strong><span>Messaging campaign spend</span></div>
+        <p>Source: Meta Ads Manager export covering 17 Aug 2025 to 10 Nov 2026. Totals are for the 26 campaigns that reported messaging conversations started as their result.</p>
+      </div>
+    </section>}
     {study.template === "rs" && <><nav className="rs-section-nav shell" aria-label="RS work categories">{!!rsDesigns.length && <a href="#rs-designs">Designs</a>}{!!rsWorks.length && <a href="#rs-creative">Videos</a>}{!!rsCampaigns.length && <a href="#rs-campaigns">Campaign results</a>}{!!rsContent.length && <a href="#rs-content">Content writing</a>}</nav><RSPortfolio designs={rsDesigns} campaigns={rsCampaigns} content={rsContent} />{!!rsWorks.length && <RSGallery works={rsWorks} />}</>}
     <section className="detail-chapters shell"><div className="section-label"><span>01</span> My work at {study.name}</div><div className="detail-chapter-list">{detail.chapters.filter(chapter => study.template !== "rs" || !/^(Sales|Operations) ·/.test(chapter.title)).map(chapter => <article key={chapter.number}><span className="chapter-number">{chapter.number}</span><div><h2>{chapter.title}</h2><p>{chapter.text}</p><small>{chapter.evidence}</small></div></article>)}</div></section>
     {study.template === "rs" && <details className="rs-history shell"><summary>Earlier experience · Sales & operations</summary><div className="detail-chapter-list">{detail.chapters.filter(chapter => /^(Sales|Operations) ·/.test(chapter.title)).map(chapter => <article key={chapter.number}><div><h2>{chapter.title}</h2><p>{chapter.text}</p><small>{chapter.evidence}</small></div></article>)}</div>{!!study.metrics.length && <div className="detail-metrics" aria-label="Earlier sales role results">{study.metrics.map((metric, i) => <div key={i}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}<p>Earlier sales role · Approximate results from the initial three-month period, separate from marketing campaign performance.</p></div>}</details>}
@@ -47,6 +57,13 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
         <a className="button primary" href="https://www.facebook.com/share/r/1CTa1EyVDV/" target="_blank" rel="noreferrer">View Facebook reel ↗</a>
       </div>
       <video controls playsInline preload="metadata" aria-labelledby="noga-video-title" src="/work/noga/noga-video-ad.mp4" />
+    </section>}
+    {study.template === "noga" && <section className="noga-video shell" id="noga-short-video" aria-labelledby="noga-short-video-title">
+      <div>
+        <span className="creative-gallery-eyebrow">NOGA HOME · VIDEO</span>
+        <h2 id="noga-short-video-title">Noga Home short-form video</h2>
+      </div>
+      <video controls playsInline preload="metadata" aria-labelledby="noga-short-video-title" src="/work/noga/noga-short-video.mp4" />
     </section>}
     {study.template === "noga" && <DesignGallery brand="Noga" designs={[nogaFeedback]} feedbackPost="https://www.facebook.com/share/p/1CFnu8tQ7u/" />}
     {study.template === "noga" && <section className="detail-website shell"><div><span className="section-label"><span>02</span> Website</span><h2>The storefront is part of the story.</h2><p>I designed and developed this storefront for Noga Home. The website is still under development.</p></div><a className="button primary" href="https://noga-home-store.amr743366.workers.dev/" target="_blank" rel="noreferrer">Visit website · In development ↗</a></section>}

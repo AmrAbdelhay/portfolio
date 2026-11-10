@@ -13,6 +13,10 @@ Updated **2026-11-10 (Africa/Cairo)**. Read alongside `AGENTS.md`, `CONTENT-GUID
 
 ## What the owner last requested
 
+The Noga page shows results from 26 Meta campaigns with messaging conversations started as their reported result. The export's reporting dates are 17 Aug 2025 to 10 Nov 2026. These campaigns recorded 4,623 conversations started and EGP 17,871.48 in spend, for EGP 3.87 per conversation. The portfolio displays these figures separately from the existing commercial estimates.
+
+The Noga page plays an additional short-form video from `public/work/noga/noga-short-video.mp4`. This video is displayed as creative work without campaign attribution.
+
 The existing Noga Eid Adha greeting opens its supplied Facebook post in bundled and older published CMS content. The Customer feedback gallery on the Noga page scrolls through the ten supplied review cards, with a pause control and a link to the Facebook post. The cards are in `public/work/noga/feedback/`.
 
 The Noga gallery now marks “Choose your bedroom mood” as AD and keeps its existing Facebook post. The green bedding design uses the newly supplied Facebook post. The Noga page also plays the supplied video ad from `public/work/noga/noga-video-ad.mp4` and links to the Facebook reel. The gallery update applies to existing published CMS documents through the versioned content merge.
