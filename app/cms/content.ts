@@ -21,7 +21,7 @@ export const contentSchema = z.object({
     stack: z.array(z.object({ name: text, items: z.array(text) })).max(50),
     aleemDesigns: z.array(z.object({ image: url, label: text })).max(200),
     nogaDesigns: z.array(designWork).max(200).default([]),
-    nogaDesignsVersion: z.number().int().min(0).default(7),
+    nogaDesignsVersion: z.number().int().min(0).default(8),
     rsDesignsVersion: z.number().int().min(0).default(1),
     rsWorksVersion: z.number().int().min(0).default(2),
     details: z.record(z.string(), z.object({ headline: text, intro: text, chapters: z.array(chapter) })),
@@ -155,6 +155,14 @@ export function mergePortfolioContent(document: unknown): PortfolioContent {
             return { ...design, url: nogaGreenBeddingPost };
         return design;
     }) : mergedNogaDesigns;
+    const organicNogaImages = new Set(defaultContent.nogaDesigns
+        .filter(design => design.reach === "Organic")
+        .flatMap(design => design.images.map(picture => picture.image)));
+    const labeledNogaDesigns = nogaVersion < 8 ? updatedNogaDesigns.map(design =>
+        !design.reach && design.images.some(picture => organicNogaImages.has(picture.image))
+            ? { ...design, reach: "Organic" }
+            : design
+    ) : updatedNogaDesigns;
     const legacyNogaMetrics = {
         contacts: { value: "5,760", label: "Messaging contacts (campaign sum)" },
         "est. ROAS": { value: "10×", label: "Estimated ROAS" },
@@ -178,7 +186,7 @@ export function mergePortfolioContent(document: unknown): PortfolioContent {
         rsWorksVersion: Math.max(liveVersion, defaultContent.rsWorksVersion),
         rsWorks,
         nogaDesignsVersion: Math.max(nogaVersion, defaultContent.nogaDesignsVersion),
-        nogaDesigns: updatedNogaDesigns,
+        nogaDesigns: labeledNogaDesigns,
         rsDesigns,
         rsCampaigns: Array.isArray(live.rsCampaigns) && live.rsCampaigns.length > 0 ? live.rsCampaigns : defaultContent.rsCampaigns,
         rsContent: Array.isArray(live.rsContent) && live.rsContent.length > 0 ? live.rsContent : defaultContent.rsContent,

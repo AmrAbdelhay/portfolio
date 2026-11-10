@@ -12,7 +12,7 @@ export const nogaDesigns = [
     "url": "https://www.facebook.com/share/p/18XSQtWZkG/",
     "role": "",
     "designTool": "AI",
-    "reach": "",
+    "reach": "Organic",
     "images": [
       {
         "image": "/work/noga/navy-floral-de10.jpg",
@@ -26,7 +26,7 @@ export const nogaDesigns = [
     "url": "https://www.facebook.com/share/p/17oYaLrxfP/",
     "role": "",
     "designTool": "AI",
-    "reach": "",
+    "reach": "Organic",
     "images": [
       {
         "image": "/work/noga/screen-to-bed-de3.jpg",
@@ -40,7 +40,7 @@ export const nogaDesigns = [
     "url": nogaGreenBeddingPost,
     "role": "",
     "designTool": "AI",
-    "reach": "",
+    "reach": "Organic",
     "images": [
       {
         "image": nogaGreenBeddingImage,
@@ -70,7 +70,7 @@ export const nogaDesigns = [
         "label": "Noga Eid Adha greeting"
       }
     ],
-    "reach": "",
+    "reach": "Organic",
     "title": "Noga Eid Adha greeting",
     "description": "Eid Adha greeting creative for Noga Home.",
     "designTool": "AI",
@@ -79,7 +79,7 @@ export const nogaDesigns = [
   {
     "role": "AI creative",
     "title": "Noga Eid greeting",
-    "reach": "",
+    "reach": "Organic",
     "description": "Eid greeting creative for Noga Home.",
     "images": [
       {

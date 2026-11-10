@@ -51,21 +51,10 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
     {study.template === "rs" && <details className="rs-history shell"><summary>Earlier experience · Sales & operations</summary><div className="detail-chapter-list">{detail.chapters.filter(chapter => /^(Sales|Operations) ·/.test(chapter.title)).map(chapter => <article key={chapter.number}><div><h2>{chapter.title}</h2><p>{chapter.text}</p><small>{chapter.evidence}</small></div></article>)}</div>{!!study.metrics.length && <div className="detail-metrics" aria-label="Earlier sales role results">{study.metrics.map((metric, i) => <div key={i}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}<p>Earlier sales role · Approximate results from the initial three-month period, separate from marketing campaign performance.</p></div>}</details>}
     {study.template === "aleem" && <DesignGallery brand="Aleem" designs={aleemDesigns.map(design => ({ title: design.label, description: "Arabic educational design crafted for Aleem’s audience and learning goals.", role: "Social design / visual communication", url: design.image, images: [{ image: design.image, label: design.label }] }))} />}
     {study.template === "noga" && <DesignGallery brand="Noga" designs={nogaDesigns} />}
-    {study.template === "noga" && <section className="noga-video shell" id="noga-video" aria-labelledby="noga-video-title">
-      <div>
-        <span className="creative-gallery-eyebrow">NOGA HOME · AD</span>
-        <h2 id="noga-video-title">Noga Home video ad</h2>
-        <a className="button primary" href="https://www.facebook.com/share/r/1CTa1EyVDV/" target="_blank" rel="noreferrer">View Facebook reel ↗</a>
-      </div>
-      <video controls playsInline preload="metadata" aria-labelledby="noga-video-title" src="/work/noga/noga-video-ad.mp4" />
-    </section>}
-    {study.template === "noga" && <section className="noga-video shell" id="noga-short-video" aria-labelledby="noga-short-video-title">
-      <div>
-        <span className="creative-gallery-eyebrow">NOGA HOME · VIDEO</span>
-        <h2 id="noga-short-video-title">Noga Home short-form video</h2>
-      </div>
-      <video controls playsInline preload="metadata" aria-labelledby="noga-short-video-title" src="/work/noga/noga-short-video.mp4" />
-    </section>}
+    {study.template === "noga" && <RSGallery brand="Noga Home" works={[
+      { id: "noga-video", title: "Noga Home video ad", description: "Video advertising creative for Noga Home.", badge: "AD", video: "/work/noga/noga-video-ad.mp4", poster: "/work/noga/noga-video-ad.jpg", url: "https://www.facebook.com/share/r/1CTa1EyVDV/" },
+      { id: "noga-short-video", title: "Noga Home short-form video", description: "Short-form video creative for Noga Home.", video: "/work/noga/noga-short-video.mp4", poster: "/work/noga/noga-short-video.jpg" },
+    ]} />}
     {study.template === "noga" && <DesignGallery brand="Noga" designs={[nogaFeedback]} feedbackPost="https://www.facebook.com/share/p/1CFnu8tQ7u/" />}
     {study.template === "noga" && <section className="detail-website shell"><div><span className="section-label"><span>02</span> Website</span><h2>The storefront is part of the story.</h2><p>I designed and developed this storefront for Noga Home. The website is still under development.</p></div><a className="button primary" href="https://noga-home-store.amr743366.workers.dev/" target="_blank" rel="noreferrer">Visit website · In development ↗</a></section>}
     <footer className="detail-footer shell"><Link href="/#work">← Back to all work</Link><span>Amr Ahmed Abdelhay · 2026</span></footer>
