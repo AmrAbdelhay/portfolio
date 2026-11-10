@@ -2,6 +2,8 @@ export const nogaBedroomAdImage = "/work/noga/bedroom-mood-de2.jpg";
 export const nogaBedroomAdPost = "https://www.facebook.com/share/p/1CGHbWsfFa/";
 export const nogaGreenBeddingImage = "/work/noga/change-bedroom-mood.png";
 export const nogaGreenBeddingPost = "https://www.facebook.com/share/p/1CRyuDukjg/";
+export const nogaEidAdhaImage = "/work/noga/eid-adha-greeting.png";
+export const nogaEidAdhaPost = "https://www.facebook.com/share/p/1E6pETUaxs/";
 
 export const nogaDesigns = [
   {
@@ -61,10 +63,10 @@ export const nogaDesigns = [
     ]
   },
   {
-    "url": "",
+    "url": nogaEidAdhaPost,
     "images": [
       {
-        "image": "/work/noga/eid-adha-greeting.png",
+        "image": nogaEidAdhaImage,
         "label": "Noga Eid Adha greeting"
       }
     ],

@@ -13,6 +13,8 @@ Updated **2026-11-10 (Africa/Cairo)**. Read alongside `AGENTS.md`, `CONTENT-GUID
 
 ## What the owner last requested
 
+The existing Noga Eid Adha greeting opens its supplied Facebook post in bundled and older published CMS content. The Noga page also links to the supplied Facebook feedback post under Customer feedback.
+
 The Noga gallery now marks “Choose your bedroom mood” as AD and keeps its existing Facebook post. The green bedding design uses the newly supplied Facebook post. The Noga page also plays the supplied video ad from `public/work/noga/noga-video-ad.mp4` and links to the Facebook reel. The gallery update applies to existing published CMS documents through the versioned content merge.
 
 Four new Noga designs were added with original Facebook post links, then labeled **AI** at the owner's request. Keep those labels. The owner subsequently asked what material to add next: selected strong designs across Noga/RS/Aleem; reels/video with actual performance evidence; campaign screenshots with private data hidden; writing samples; and development work with the owner's role. Prefer 4–8 strong pieces per brand. Record brand, contribution, tools and paid-vs-organic status for each piece.

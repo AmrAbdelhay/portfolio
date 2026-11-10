@@ -4,7 +4,7 @@ import { details } from "./case-details";
 import { rsWorks } from "./rs-data";
 import { rsDesigns as newRSDesigns, rsDesignPosts } from "./rs-designs";
 import { brandPlatforms } from "./social-data";
-import { nogaBedroomAdImage, nogaBedroomAdPost, nogaDesigns, nogaGreenBeddingImage, nogaGreenBeddingPost } from "./noga-designs";
+import { nogaBedroomAdImage, nogaBedroomAdPost, nogaDesigns, nogaEidAdhaImage, nogaEidAdhaPost, nogaGreenBeddingImage, nogaGreenBeddingPost } from "./noga-designs";
 const text = z.string().max(12000);
 const url = text.refine(v => v === "" || (/^\/(?!\/)/.test(v) && !v.includes("\\")) || /^https:\/\//.test(v), "Use an HTTPS link or a local /path");
 const metric = z.object({ value: text, label: text });
@@ -21,7 +21,7 @@ export const contentSchema = z.object({
     stack: z.array(z.object({ name: text, items: z.array(text) })).max(50),
     aleemDesigns: z.array(z.object({ image: url, label: text })).max(200),
     nogaDesigns: z.array(designWork).max(200).default([]),
-    nogaDesignsVersion: z.number().int().min(0).default(6),
+    nogaDesignsVersion: z.number().int().min(0).default(7),
     rsDesignsVersion: z.number().int().min(0).default(1),
     rsWorksVersion: z.number().int().min(0).default(2),
     details: z.record(z.string(), z.object({ headline: text, intro: text, chapters: z.array(chapter) })),
@@ -146,10 +146,12 @@ export function mergePortfolioContent(document: unknown): PortfolioContent {
         ...defaultContent.nogaDesigns.filter(work => work.images.some(picture => nogaVersion < (picture.image === "/work/noga/navy-floral-de10.jpg" ? 5 : picture.image === "/work/noga/screen-to-bed-de3.jpg" ? 4 : picture.image === nogaGreenBeddingImage ? 3 : picture.image === nogaBedroomAdImage ? 2 : 1)) && !liveNogaDesigns.some(existing => existing.images.some(picture => work.images.some(candidate => candidate.image === picture.image)))),
         ...liveNogaDesigns,
     ] : liveNogaDesigns;
-    const updatedNogaDesigns = nogaVersion < 6 ? mergedNogaDesigns.map(design => {
-        if (design.images.some(picture => picture.image === nogaBedroomAdImage))
+    const updatedNogaDesigns = nogaVersion < 7 ? mergedNogaDesigns.map(design => {
+        if (design.images.some(picture => picture.image === nogaEidAdhaImage))
+            return { ...design, url: nogaEidAdhaPost };
+        if (nogaVersion < 6 && design.images.some(picture => picture.image === nogaBedroomAdImage))
             return { ...design, url: design.url || nogaBedroomAdPost, reach: "Ad" };
-        if (design.images.some(picture => picture.image === nogaGreenBeddingImage))
+        if (nogaVersion < 6 && design.images.some(picture => picture.image === nogaGreenBeddingImage))
             return { ...design, url: nogaGreenBeddingPost };
         return design;
     }) : mergedNogaDesigns;
