@@ -17,9 +17,10 @@ function Pictures({ images, title }: { images: Picture[]; title: string }) {
       <p dir="auto">{pictures[index].label || title}</p>
     </dialog></>;
 }
-export function DesignGallery({ brand, designs }: { brand: string; designs: PortfolioContent["rsDesigns"] }) {
+export function DesignGallery({ brand, designs, feedbackPost }: { brand: string; designs: PortfolioContent["rsDesigns"]; feedbackPost?: string }) {
   const pictures = designs.flatMap(work => work.images.map(image => ({ image: image.image, label: image.label || work.title, url: work.url || image.image, designTool: work.designTool, reach: work.reach }))).filter(image => image.image);
   const rail = useRef<HTMLDivElement>(null);
+  const [paused, setPaused] = useState(false);
   const held = useRef(false);
   const pauseUntil = useRef(0);
   const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null);
@@ -40,7 +41,7 @@ export function DesignGallery({ brand, designs }: { brand: string; designs: Port
     const tick = (now: number) => {
       const elapsed = previous ? Math.min(now - previous, 50) : 0;
       previous = now;
-      if (!reduced.matches && !document.hidden && !held.current && !drag.current && now > pauseUntil.current) {
+      if (!paused && !reduced.matches && !document.hidden && !held.current && !drag.current && now > pauseUntil.current) {
         const end = node.scrollWidth - node.clientWidth;
         remainder += elapsed * .025;
         const step = Math.floor(remainder);
@@ -51,18 +52,21 @@ export function DesignGallery({ brand, designs }: { brand: string; designs: Port
     };
     frame = requestAnimationFrame(tick);
     return () => { cancelAnimationFrame(frame); node.removeEventListener("wheel", wheel); };
-  }, [pictures.length]);
+  }, [pictures.length, paused]);
   if (!pictures.length) return null;
   const slug = brand.toLowerCase();
-  const heading = brand === "Aleem" ? "Designs for learning in action." : brand === "Noga" ? "Selected creative for Noga Home." : "Designs with a purpose.";
-  const intro = brand === "Aleem" ? "Arabic social designs for courses and business education. Select a design to see it in full." : brand === "Noga" ? "Product and campaign visuals for Noga Home. Select a design to see it in full." : "Content written and visuals designed by me. Select a design to view its original Facebook post.";
-  return <section className="creative-gallery shell" id={slug === "aleem" ? "aleem-gallery" : `${slug}-designs`}>
-    <div className="creative-gallery-heading"><div><span className="creative-gallery-eyebrow">{brand.toUpperCase()} · SELECTED CREATIVE</span><h2>{heading}</h2><p>{intro}</p></div><span className="creative-gallery-count">01 — {String(pictures.length).padStart(2, "0")}</span></div>
-    <div className="creative-gallery-window" ref={rail} tabIndex={0} aria-label={`${brand} design gallery`} onMouseEnter={() => { held.current = true; }} onMouseLeave={() => { held.current = false; }} onFocusCapture={() => { held.current = true; }} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) held.current = false; }} onPointerDown={event => { if (event.pointerType !== "mouse" || event.button !== 0) return; drag.current = { x: event.clientX, left: event.currentTarget.scrollLeft, moved: false }; suppressClick.current = false; }} onPointerMove={event => { const start = drag.current; if (!start) return; if (Math.abs(event.clientX - start.x) > 5) { start.moved = true; suppressClick.current = true; event.currentTarget.setPointerCapture(event.pointerId); event.currentTarget.scrollLeft = start.left - (event.clientX - start.x); } }} onPointerUp={() => { drag.current = null; pauseUntil.current = performance.now() + 2500; }} onPointerCancel={() => { drag.current = null; }} onClickCapture={event => { if (suppressClick.current) { event.preventDefault(); event.stopPropagation(); suppressClick.current = false; } }} onDragStart={event => event.preventDefault()}>
+  const heading = feedbackPost ? "Customer feedback" : brand === "Aleem" ? "Designs for learning in action." : brand === "Noga" ? "Selected creative for Noga Home." : "Designs with a purpose.";
+  const intro = feedbackPost ? "Messages shared by Noga Home customers. Select a card to read it in full." : brand === "Aleem" ? "Arabic social designs for courses and business education. Select a design to see it in full." : brand === "Noga" ? "Product and campaign visuals for Noga Home. Select a design to see it in full." : "Content written and visuals designed by me. Select a design to view its original Facebook post.";
+  const galleryLabel = feedbackPost ? "Noga Home customer feedback" : `${brand} design gallery`;
+  return <section className="creative-gallery shell" id={feedbackPost ? "noga-feedback" : slug === "aleem" ? "aleem-gallery" : `${slug}-designs`}>
+    <div className="creative-gallery-heading"><div><span className="creative-gallery-eyebrow">{feedbackPost ? "NOGA HOME" : `${brand.toUpperCase()} · SELECTED CREATIVE`}</span><h2>{heading}</h2><p>{intro}</p>
+      {feedbackPost && <div className="feedback-actions"><a className="button primary" href={feedbackPost} target="_blank" rel="noreferrer">View feedback post on Facebook ↗</a><button className="button" type="button" onClick={() => setPaused(value => !value)}>{paused ? "Resume scrolling" : "Pause scrolling"}</button></div>}
+    </div><span className="creative-gallery-count">01 — {String(pictures.length).padStart(2, "0")}</span></div>
+    <div className="creative-gallery-window" ref={rail} tabIndex={0} aria-label={galleryLabel} onMouseEnter={() => { held.current = true; }} onMouseLeave={() => { held.current = false; }} onFocusCapture={() => { held.current = true; }} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) held.current = false; }} onPointerDown={event => { if (event.pointerType !== "mouse" || event.button !== 0) return; drag.current = { x: event.clientX, left: event.currentTarget.scrollLeft, moved: false }; suppressClick.current = false; }} onPointerMove={event => { const start = drag.current; if (!start) return; if (Math.abs(event.clientX - start.x) > 5) { start.moved = true; suppressClick.current = true; event.currentTarget.setPointerCapture(event.pointerId); event.currentTarget.scrollLeft = start.left - (event.clientX - start.x); } }} onPointerUp={() => { drag.current = null; pauseUntil.current = performance.now() + 2500; }} onPointerCancel={() => { drag.current = null; }} onClickCapture={event => { if (suppressClick.current) { event.preventDefault(); event.stopPropagation(); suppressClick.current = false; } }} onDragStart={event => event.preventDefault()}>
       <div className="creative-gallery-track">
         {pictures.map((picture, index) => {
           const reach = picture.reach || (brand === "RS" ? rsDesignReach[picture.url] : undefined);
-          return <div className="creative-design-item" key={`${picture.image}-${index}`}><a className="creative-design" href={picture.url} target="_blank" rel="noreferrer" aria-label={`View ${brand} design: ${picture.label}${reach ? ` (${reach})` : ""}`}><img src={picture.image} alt={picture.label} loading="lazy" draggable={false} />{reach && <span className={`creative-reach ${reach === "Organic" ? "organic" : ""}`}>{reach}</span>}<span aria-hidden="true">↗</span></a>{picture.designTool && <p className="creative-design-tool">Designed in {picture.designTool}</p>}</div>;
+          return <div className="creative-design-item" key={`${picture.image}-${index}`}><a className="creative-design" href={picture.url} target="_blank" rel="noreferrer" aria-label={feedbackPost ? picture.label : `View ${brand} design: ${picture.label}${reach ? ` (${reach})` : ""}`}><img src={picture.image} alt={picture.label} loading="lazy" draggable={false} />{reach && <span className={`creative-reach ${reach === "Organic" ? "organic" : ""}`}>{reach}</span>}<span aria-hidden="true">↗</span></a>{picture.designTool && <p className="creative-design-tool">Designed in {picture.designTool}</p>}</div>;
         })}
       </div>
     </div>

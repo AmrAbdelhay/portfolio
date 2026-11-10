@@ -8,6 +8,16 @@ import RSGallery from "../../rs-gallery";
 import BrandSocials from "../../brand-socials";
 
 export const dynamic = "force-dynamic";
+const nogaFeedback = {
+  title: "Customer feedback",
+  description: "",
+  role: "",
+  url: "",
+  images: Array.from({ length: 10 }, (_, index) => ({
+    image: `/work/noga/feedback/review-${String(index + 1).padStart(2, "0")}.jpg`,
+    label: `Noga Home customer feedback ${index + 1}`,
+  })),
+};
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const { caseStudies } = await publishedContent();
@@ -38,13 +48,7 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
       </div>
       <video controls playsInline preload="metadata" aria-labelledby="noga-video-title" src="/work/noga/noga-video-ad.mp4" />
     </section>}
-    {study.template === "noga" && <section className="detail-website shell" id="noga-feedback" aria-labelledby="noga-feedback-title">
-      <div>
-        <span className="section-label">Noga Home</span>
-        <h2 id="noga-feedback-title">Customer feedback</h2>
-      </div>
-      <a className="button primary" href="https://www.facebook.com/share/p/1CFnu8tQ7u/" target="_blank" rel="noreferrer">View feedback post on Facebook ↗</a>
-    </section>}
+    {study.template === "noga" && <DesignGallery brand="Noga" designs={[nogaFeedback]} feedbackPost="https://www.facebook.com/share/p/1CFnu8tQ7u/" />}
     {study.template === "noga" && <section className="detail-website shell"><div><span className="section-label"><span>02</span> Website</span><h2>The storefront is part of the story.</h2><p>I designed and developed this storefront for Noga Home. The website is still under development.</p></div><a className="button primary" href="https://noga-home-store.amr743366.workers.dev/" target="_blank" rel="noreferrer">Visit website · In development ↗</a></section>}
     <footer className="detail-footer shell"><Link href="/#work">← Back to all work</Link><span>Amr Ahmed Abdelhay · 2026</span></footer>
   </main>;

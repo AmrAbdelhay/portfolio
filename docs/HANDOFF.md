@@ -13,7 +13,7 @@ Updated **2026-11-10 (Africa/Cairo)**. Read alongside `AGENTS.md`, `CONTENT-GUID
 
 ## What the owner last requested
 
-The existing Noga Eid Adha greeting opens its supplied Facebook post in bundled and older published CMS content. The Noga page also links to the supplied Facebook feedback post under Customer feedback.
+The existing Noga Eid Adha greeting opens its supplied Facebook post in bundled and older published CMS content. The Customer feedback gallery on the Noga page scrolls through the ten supplied review cards, with a pause control and a link to the Facebook post. The cards are in `public/work/noga/feedback/`.
 
 The Noga gallery now marks “Choose your bedroom mood” as AD and keeps its existing Facebook post. The green bedding design uses the newly supplied Facebook post. The Noga page also plays the supplied video ad from `public/work/noga/noga-video-ad.mp4` and links to the Facebook reel. The gallery update applies to existing published CMS documents through the versioned content merge.
 
