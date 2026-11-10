@@ -15,6 +15,8 @@ Updated **2026-11-10 (Africa/Cairo)**. Read alongside `AGENTS.md`, `CONTENT-GUID
 
 The Noga page shows results from 26 Meta campaigns with messaging conversations started as their reported result. The export's reporting dates are 17 Aug 2025 to 10 Nov 2026. These campaigns recorded 4,623 conversations started and EGP 17,871.48 in spend, for EGP 3.87 per conversation. The portfolio displays these figures separately from the existing commercial estimates.
 
+The messaging results section also describes how Amr tested several ad creatives and increased the budget for the best performer.
+
 The Noga page plays an additional short-form video from `public/work/noga/noga-short-video.mp4`. This video is displayed as creative work without campaign attribution.
 
 The existing Noga Eid Adha greeting opens its supplied Facebook post in bundled and older published CMS content. The Customer feedback gallery on the Noga page scrolls through the ten supplied review cards, with a pause control and a link to the Facebook post. The cards are in `public/work/noga/feedback/`.

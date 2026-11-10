@@ -42,6 +42,7 @@ export default async function CasePage({ params }: { params: Promise<{ slug: str
         <div><strong>4,623</strong><span>Messaging conversations started</span></div>
         <div><strong>EGP 3.87</strong><span>Average cost per conversation started</span></div>
         <div><strong>EGP 17,871.48</strong><span>Messaging campaign spend</span></div>
+        <p className="noga-messaging-approach">I tested several ad creatives, identified the best performer, and increased the budget behind it.</p>
         <p>Source: Meta Ads Manager export covering 17 Aug 2025 to 10 Nov 2026. Totals are for the 26 campaigns that reported messaging conversations started as their result.</p>
       </div>
     </section>}

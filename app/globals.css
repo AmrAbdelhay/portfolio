@@ -1008,6 +1008,7 @@ button {
 .detail-metrics p { width: 100%; color: #989e95; font-size: 12px; margin: 8px 0 0; }
 .noga-messaging { padding-top: 40px; }
 .noga-messaging h2 { margin: 12px 0 20px; }
+.noga-messaging .noga-messaging-approach { color: #bdc2b9; font-size: 16px; }
 .detail-chapters, .detail-creative { padding-top: 82px; padding-bottom: 90px; }
 .detail-chapter-list { margin-top: 40px; border-top: 1px solid var(--line); }
 .detail-chapter-list article { display: grid; grid-template-columns: 100px 1fr; gap: 20px; padding: 42px 0; border-bottom: 1px solid var(--line); }
