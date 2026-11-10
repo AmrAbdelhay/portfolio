@@ -1,3 +1,8 @@
+export const nogaBedroomAdImage = "/work/noga/bedroom-mood-de2.jpg";
+export const nogaBedroomAdPost = "https://www.facebook.com/share/p/1CGHbWsfFa/";
+export const nogaGreenBeddingImage = "/work/noga/change-bedroom-mood.png";
+export const nogaGreenBeddingPost = "https://www.facebook.com/share/p/1CRyuDukjg/";
+
 export const nogaDesigns = [
   {
     "title": "Navy completes your bedroom",
@@ -30,13 +35,13 @@ export const nogaDesigns = [
   {
     "title": "Change your sheets, change your bedroom mood",
     "description": "Noga Home green floral bedding creative with the message: غيّري الملاية غيّري مود الأوضة.",
-    "url": "https://www.facebook.com/share/p/14mXDC6fZar/",
+    "url": nogaGreenBeddingPost,
     "role": "",
     "designTool": "AI",
     "reach": "",
     "images": [
       {
-        "image": "/work/noga/change-bedroom-mood.png",
+        "image": nogaGreenBeddingImage,
         "label": "Noga Home green floral bedding — غيّري الملاية غيّري مود الأوضة"
       }
     ]
@@ -47,10 +52,10 @@ export const nogaDesigns = [
     "url": "https://www.facebook.com/share/p/19kaoZFDG1/",
     "role": "",
     "designTool": "AI",
-    "reach": "",
+    "reach": "Ad",
     "images": [
       {
-        "image": "/work/noga/bedroom-mood-de2.jpg",
+        "image": nogaBedroomAdImage,
         "label": "Noga Home floral bedding — اختاري مود أوضتك"
       }
     ]

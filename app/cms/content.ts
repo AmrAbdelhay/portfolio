@@ -4,7 +4,7 @@ import { details } from "./case-details";
 import { rsWorks } from "./rs-data";
 import { rsDesigns as newRSDesigns, rsDesignPosts } from "./rs-designs";
 import { brandPlatforms } from "./social-data";
-import { nogaDesigns } from "./noga-designs";
+import { nogaBedroomAdImage, nogaBedroomAdPost, nogaDesigns, nogaGreenBeddingImage, nogaGreenBeddingPost } from "./noga-designs";
 const text = z.string().max(12000);
 const url = text.refine(v => v === "" || (/^\/(?!\/)/.test(v) && !v.includes("\\")) || /^https:\/\//.test(v), "Use an HTTPS link or a local /path");
 const metric = z.object({ value: text, label: text });
@@ -21,7 +21,7 @@ export const contentSchema = z.object({
     stack: z.array(z.object({ name: text, items: z.array(text) })).max(50),
     aleemDesigns: z.array(z.object({ image: url, label: text })).max(200),
     nogaDesigns: z.array(designWork).max(200).default([]),
-    nogaDesignsVersion: z.number().int().min(0).default(5),
+    nogaDesignsVersion: z.number().int().min(0).default(6),
     rsDesignsVersion: z.number().int().min(0).default(1),
     rsWorksVersion: z.number().int().min(0).default(2),
     details: z.record(z.string(), z.object({ headline: text, intro: text, chapters: z.array(chapter) })),
@@ -140,14 +140,27 @@ export function mergePortfolioContent(document: unknown): PortfolioContent {
     const liveDesigns = Array.isArray(live.rsDesigns) ? live.rsDesigns : defaultContent.rsDesigns;
     const cleanDesigns = liveDesigns.map(work => ({ ...work, images: work.images.filter(picture => !/\/(?:rs-sc-03|SC%203|SC 3|rs-de-05|RS%20DE%205|RS DE 5)\.jpeg(?:[?#]|$)/i.test(picture.image)) })).filter(work => work.images.length > 0);
     const rsDesigns = designVersion < 1 ? [...cleanDesigns, ...defaultContent.rsDesigns.filter(work => !cleanDesigns.some(existing => existing.images.some(picture => work.images.some(candidate => candidate.image === picture.image))))] : cleanDesigns;
+    const nogaVersion = live.nogaDesignsVersion ?? 0;
+    const liveNogaDesigns = live.nogaDesigns ?? defaultContent.nogaDesigns;
+    const mergedNogaDesigns = nogaVersion < 5 ? [
+        ...defaultContent.nogaDesigns.filter(work => work.images.some(picture => nogaVersion < (picture.image === "/work/noga/navy-floral-de10.jpg" ? 5 : picture.image === "/work/noga/screen-to-bed-de3.jpg" ? 4 : picture.image === nogaGreenBeddingImage ? 3 : picture.image === nogaBedroomAdImage ? 2 : 1)) && !liveNogaDesigns.some(existing => existing.images.some(picture => work.images.some(candidate => candidate.image === picture.image)))),
+        ...liveNogaDesigns,
+    ] : liveNogaDesigns;
+    const updatedNogaDesigns = nogaVersion < 6 ? mergedNogaDesigns.map(design => {
+        if (design.images.some(picture => picture.image === nogaBedroomAdImage))
+            return { ...design, url: design.url || nogaBedroomAdPost, reach: "Ad" };
+        if (design.images.some(picture => picture.image === nogaGreenBeddingImage))
+            return { ...design, url: nogaGreenBeddingPost };
+        return design;
+    }) : mergedNogaDesigns;
     return contentSchema.parse({
         ...defaultContent,
         ...live,
         rsDesignsVersion: Math.max(designVersion, 1),
         rsWorksVersion: Math.max(liveVersion, defaultContent.rsWorksVersion),
         rsWorks,
-        nogaDesignsVersion: Math.max(live.nogaDesignsVersion ?? 0, 5),
-        nogaDesigns: (live.nogaDesignsVersion ?? 0) < 5 ? [...defaultContent.nogaDesigns.filter(work => work.images.some(picture => (live.nogaDesignsVersion ?? 0) < (picture.image === "/work/noga/navy-floral-de10.jpg" ? 5 : picture.image === "/work/noga/screen-to-bed-de3.jpg" ? 4 : picture.image === "/work/noga/change-bedroom-mood.png" ? 3 : picture.image === "/work/noga/bedroom-mood-de2.jpg" ? 2 : 1)) && !(live.nogaDesigns ?? []).some(existing => existing.images.some(picture => work.images.some(candidate => candidate.image === picture.image)))), ...(live.nogaDesigns ?? [])] : (live.nogaDesigns ?? defaultContent.nogaDesigns),
+        nogaDesignsVersion: Math.max(nogaVersion, defaultContent.nogaDesignsVersion),
+        nogaDesigns: updatedNogaDesigns,
         rsDesigns,
         rsCampaigns: Array.isArray(live.rsCampaigns) && live.rsCampaigns.length > 0 ? live.rsCampaigns : defaultContent.rsCampaigns,
         rsContent: Array.isArray(live.rsContent) && live.rsContent.length > 0 ? live.rsContent : defaultContent.rsContent,
